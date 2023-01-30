@@ -16,9 +16,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
       home: Scaffold(
         appBar: AppBar(
           title: Text("Json fles"),
@@ -33,10 +30,25 @@ class MyApp extends StatelessWidget {
               return ListView.builder(
                   itemCount: people == null ? 0 : people.length,
                   itemBuilder: (context, index) {
-                    return Text(people[index].name.toString());
+                    return Center(
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text('name: ${people[index].name.toString()}'),
+                              SizedBox(width: 50),
+                              Text(
+                                  'surname: ${people[index].surname.toString()}'),
+                              SizedBox(width: 50),
+                              Text('age: ${people[index].age.toString()}'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
                   });
             } else {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -48,7 +60,16 @@ class MyApp extends StatelessWidget {
 
   Future<List<Person>> readJsonData() async {
     final jsonData = await rootBundle.loadString('jsonfile/example.json');
-    final list = json.decode(jsonData) as List<dynamic>;
-    return list.map((e) => Person.fromJson(e)).toList();
+    final list = jsonDecode(jsonData) as List<dynamic>;
+    return list
+        .map((dynamic e) => Person.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> writeDataToFile(Map<String, dynamic> data) async {
+    final file = File('jsonfile/example.json');
+    final jsonData = jsonEncode(data);
+    print(jsonData);
+    // await file.writeAsString(jsonData);
   }
 }
