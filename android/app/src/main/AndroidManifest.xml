@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.flutter_json">
+    package="com.example.flutter_js">
    <application
-        android:label="flutter_json"
+        android:label="flutter_js"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

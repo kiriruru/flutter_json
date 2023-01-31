@@ -1,4 +1,4 @@
-package com.example.flutter_json
+package com.example.flutter_js
 
 import io.flutter.embedding.android.FlutterActivity
 

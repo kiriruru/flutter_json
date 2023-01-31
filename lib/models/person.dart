@@ -22,9 +22,11 @@ class Person {
         age: json['age'] as int);
   }
 
-  Map<String, Object?> toJson() => {
-        PersonFields.name: name,
-        PersonFields.surname: surname,
-        PersonFields.age: age,
-      };
+  Map<String, Object?> toJson() {
+    return {
+      PersonFields.name: name,
+      PersonFields.surname: surname,
+      PersonFields.age: age,
+    };
+  }
 }

@@ -1,4 +1,4 @@
-# flutter_json
+# flutter_js
 
 A new Flutter project.
 

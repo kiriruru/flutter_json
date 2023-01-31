@@ -1,6 +1,6 @@
 {
-    "name": "flutter_json",
-    "short_name": "flutter_json",
+    "name": "flutter_js",
+    "short_name": "flutter_js",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
