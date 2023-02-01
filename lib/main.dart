@@ -32,12 +32,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List _items = [];
+  final File file = File('assets/example.json');
+
   Person personOne = Person(name: "Anton", surname: "Krasnih", age: 31);
 
   Future<void> readJsonData() async {
-    final File file = File('assets/example.json');
-    if (!await file.exists()) await file.create();
-
     final String jsonData = await file.readAsString();
     final list = jsonDecode(jsonData);
     list
@@ -48,12 +47,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> addJsonData(Person newPerson) async {
-    final File file = File('assets/example.json');
-    if (!await file.exists()) await file.create();
-
     final person = newPerson.toJson();
     setState(() => _items.add(person));
 
+    final jsonDataUpdated = jsonEncode(_items);
+    await file.writeAsString(jsonDataUpdated);
+  }
+
+  Future<void> removeLastJsonData() async {
+    setState(() => _items.removeLast());
     final jsonDataUpdated = jsonEncode(_items);
     await file.writeAsString(jsonDataUpdated);
   }
@@ -83,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () => addJsonData(personOne),
               child: Text("Add person"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => removeLastJsonData(),
+              child: Text("Remove last person"),
             )
           ],
         ),
