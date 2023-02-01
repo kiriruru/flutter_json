@@ -31,21 +31,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String initialJsonData =
-      '[{"name":"Ali","surname":"Begov","age":25},{"name":"Alimardon","surname":"b","age":6},{"name":"Ekarfe","surname":"Duno","age":4}]';
+  // variables
 
   List<Person> _items = [];
   final File file = File('assets/example.json');
 
+  String initialJsonData =
+      '[{"name":"Ali","surname":"Begov","age":25},{"name":"Alimardon","surname":"b","age":6},{"name":"Ekarfe","surname":"Duno","age":4}]';
   Person personOne = Person(name: "Anton", surname: "Krasnih", age: 31);
 
+// CRUD
+
   Future<void> resetJsonData() async {
-    final list = jsonDecode(initialJsonData);
-    list
+    final json = jsonDecode(initialJsonData) as List<dynamic>;
+    final people = json
         .map((dynamic e) => Person.fromJson(e as Map<String, dynamic>))
         .toList();
 
-    setState(() => _items = list);
+    setState(() => _items = people);
     final jsonDataUpdated = jsonEncode(_items);
     await file.writeAsString(jsonDataUpdated);
   }
@@ -61,18 +64,20 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> addJsonData(Person newPerson) async {
-    final person = newPerson.toJson();
-    setState(() => _items.add(person as Person));
+    // final json = newPerson.toJson();
+    setState(() => _items.add(newPerson));
 
     final jsonDataUpdated = jsonEncode(_items);
     await file.writeAsString(jsonDataUpdated);
   }
 
   Future<void> removeLastJsonData() async {
-    setState(() => {if (_items.length > 0) _items.removeLast()});
+    if (_items.length > 0) {
+      setState(() => {_items.removeLast()});
 
-    final jsonDataUpdated = jsonEncode(_items);
-    await file.writeAsString(jsonDataUpdated);
+      final jsonDataUpdated = jsonEncode(_items);
+      await file.writeAsString(jsonDataUpdated);
+    }
   }
 
   @override
