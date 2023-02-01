@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String initialJsonData =
       '[{"name":"Ali","surname":"Begov","age":25},{"name":"Alimardon","surname":"b","age":6},{"name":"Ekarfe","surname":"Duno","age":4}]';
 
-  List _items = [];
+  List<Person> _items = [];
   final File file = File('assets/example.json');
 
   Person personOne = Person(name: "Anton", surname: "Krasnih", age: 31);
@@ -52,17 +52,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> readJsonData() async {
     final String jsonData = await file.readAsString();
-    final list = jsonDecode(jsonData);
-    list
-        .map((dynamic e) => Person.fromJson(e as Map<String, dynamic>))
-        .toList();
+    final json = jsonDecode(jsonData) as List<dynamic>;
 
-    setState(() => _items = list);
+    final people =
+        json.map((e) => Person.fromJson(e as Map<String, dynamic>)).toList();
+
+    setState(() => _items = people);
   }
 
   Future<void> addJsonData(Person newPerson) async {
     final person = newPerson.toJson();
-    setState(() => _items.add(person));
+    setState(() => _items.add(person as Person));
 
     final jsonDataUpdated = jsonEncode(_items);
     await file.writeAsString(jsonDataUpdated);
@@ -111,15 +111,39 @@ class _MyHomePageState extends State<MyHomePage> {
                 validator: (value) => value == null ? 'Age is required' : null,
               ),
             ),
+            ElevatedButton(
+              onPressed: () => readJsonData(),
+              child: Text("Load data"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => addJsonData(personOne),
+              child: Text("Add person"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => removeLastJsonData(),
+              child: Text("Remove last person"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => resetJsonData(),
+              child: Text("Reset data"),
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: _items.length,
                 itemBuilder: (context, index) {
+                  var element = _items[index];
+
                   return ListTile(
-                    title: Text("List of people"),
+                    title: Text("${element.name}"),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[],
+                      children: <Widget>[
+                        Text(""),
+                        Text(""),
+                      ],
                     ),
                   );
                 },
