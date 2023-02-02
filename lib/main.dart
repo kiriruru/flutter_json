@@ -35,6 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Person> _items = [];
   final File file = File('assets/example.json');
+  bool isActiveButton = false;
+
+  final _formKey = GlobalKey<FormState>();
+  Person personOnCreate = Person();
+  // TextEditingController _controllerName = TextEditingController();
+  // TextEditingController _controllerSurname = TextEditingController();
+  // TextEditingController _controllerAge = TextEditingController();
 
   String initialJsonData =
       '[{"name":"Ali","surname":"Begov","age":25},{"name":"Alimardon","surname":"b","age":6},{"name":"Ekarfe","surname":"Duno","age":4}]';
@@ -42,42 +49,36 @@ class _MyHomePageState extends State<MyHomePage> {
 
 // CRUD
 
-  Future<void> resetJsonData() async {
-    final json = jsonDecode(initialJsonData) as List<dynamic>;
-    final people = json
-        .map((dynamic e) => Person.fromJson(e as Map<String, dynamic>))
-        .toList();
-
-    setState(() => _items = people);
-    final jsonDataUpdated = jsonEncode(_items);
-    await file.writeAsString(jsonDataUpdated);
-  }
-
-  Future<void> readJsonData() async {
-    final String jsonData = await file.readAsString();
-    final json = jsonDecode(jsonData) as List<dynamic>;
-
-    final people =
-        json.map((e) => Person.fromJson(e as Map<String, dynamic>)).toList();
-
-    setState(() => _items = people);
-  }
+// Future<void> readJsonData() async {
+  //   final String jsonData = await file.readAsString();
+  //   final json = jsonDecode(jsonData) as List<dynamic>;
+  //   final people =
+  //       json.map((e) => Person.fromJson(e as Map<String, dynamic>)).toList();
+  //   setState(() => _items = people);
+  // }
 
   Future<void> addJsonData(Person newPerson) async {
-    // final json = newPerson.toJson();
     setState(() => _items.add(newPerson));
-
     final jsonDataUpdated = jsonEncode(_items);
     await file.writeAsString(jsonDataUpdated);
   }
 
   Future<void> removeLastJsonData() async {
-    if (_items.length > 0) {
+    if (_items.isNotEmpty) {
       setState(() => {_items.removeLast()});
-
       final jsonDataUpdated = jsonEncode(_items);
       await file.writeAsString(jsonDataUpdated);
     }
+  }
+
+  Future<void> resetJsonData() async {
+    final json = jsonDecode(initialJsonData) as List<dynamic>;
+    final people = json
+        .map((dynamic e) => Person.fromJson(e as Map<String, dynamic>))
+        .toList();
+    setState(() => _items = people);
+    final jsonDataUpdated = jsonEncode(_items);
+    await file.writeAsString(jsonDataUpdated);
   }
 
   @override
@@ -89,41 +90,63 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Column(
           children: <Widget>[
             Form(
-              child: TextFormField(
-                controller: TextEditingController(),
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                ),
-                validator: (value) => value == null ? 'Name is required' : null,
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    // controller: _controllerName,
+                    // onChanged: (value) {
+                    //   value.isNotEmpty
+                    //       ? setState(() => isActiveButton = true)
+                    //       : null;
+                    // },
+                    onChanged: (value) => value.isNotEmpty
+                        ? setState(() => isActiveButton = true)
+                        : setState(() => isActiveButton = false),
+                    onSaved: ((value) =>
+                        setState(() => personOnCreate.name = value)),
+                    decoration: const InputDecoration(labelText: 'Name'),
+                  ),
+                  TextFormField(
+                    onChanged: (value) => value.isNotEmpty
+                        ? setState(() => isActiveButton = true)
+                        : setState(() => isActiveButton = false),
+                    onSaved: ((value) =>
+                        setState(() => personOnCreate.surname = value)),
+                    decoration: const InputDecoration(labelText: 'Surname'),
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    onSaved: (value) {
+                      if (value == null ||
+                          value.isEmpty && personOnCreate.name != "") {
+                        setState(() => personOnCreate.age = null);
+                      } else if (personOnCreate.name != "" ||
+                          personOnCreate.surname != "") {
+                        personOnCreate.age = int.tryParse(value ?? '') ?? null;
+                      }
+                    },
+                    decoration: const InputDecoration(labelText: 'Age'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () => {
+                      if (isActiveButton == true)
+                        {
+                          _formKey.currentState?.save(),
+                          addJsonData(personOnCreate),
+                          personOnCreate = Person(),
+                        },
+                      if (isActiveButton == false) null
+                    },
+                    child: Text("Add person"),
+                  ),
+                ],
               ),
-            ),
-            Form(
-              child: TextFormField(
-                controller: TextEditingController(),
-                decoration: const InputDecoration(
-                  labelText: 'Surname',
-                ),
-                validator: (value) =>
-                    value == null ? 'Surname is required' : null,
-              ),
-            ),
-            Form(
-              child: TextFormField(
-                controller: TextEditingController(),
-                decoration: const InputDecoration(
-                  labelText: 'Age',
-                ),
-                validator: (value) => value == null ? 'Age is required' : null,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () => readJsonData(),
-              child: Text("Load data"),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => addJsonData(personOne),
-              child: Text("Add person"),
+              child: Text("Add the single person"),
             ),
             SizedBox(height: 10),
             ElevatedButton(
@@ -139,17 +162,22 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ListView.builder(
                 itemCount: _items.length,
                 itemBuilder: (context, index) {
-                  var element = _items[index];
-
-                  return ListTile(
-                    title: Text("${element.name}"),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(""),
-                        Text(""),
-                      ],
-                    ),
+                  return Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 200,
+                        child: Text("${_items[index].name}"),
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: Text("${_items[index].surname}"),
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: Text("${_items[index].age}"),
+                      ),
+                    ],
                   );
                 },
               ),
@@ -192,3 +220,13 @@ class _MyHomePageState extends State<MyHomePage> {
 //           ],
 //         ),
 //       ),
+
+// validator: (value) {
+//   if (value == null || value.isEmpty) {
+//     return 'Please enter a number';
+//   }
+//   if (double.tryParse(value) == null) {
+//     return 'Please enter a valid number';
+//   }
+//   return null;
+// },
