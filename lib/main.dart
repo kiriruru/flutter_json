@@ -34,15 +34,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<String, dynamic> _jsonItem = {};
 
-  bool isActiveButton = false;
-
   Future<void> onStopEditing(key, value) async {
     setState(() => _jsonItem[key] = value);
     final jsonDataUpdated = jsonEncode(_jsonItem);
     await file.writeAsString(jsonDataUpdated);
   }
 
-  void readJsonData() async {
+  Future<void> readJsonData() async {
     final File file = File('assets/example.json');
     final String jsonData = await file.readAsString();
     final json = jsonDecode(jsonData);
@@ -110,25 +108,25 @@ class InputWidget extends StatefulWidget {
 }
 
 class _InputWidgetState extends State<InputWidget> {
-  final TextEditingController controller = TextEditingController();
+  TextEditingController _controller = TextEditingController();
   String? fieldToFill;
-
-  void updateInfo() {
-    widget.onStopEditing(fieldToFill, controller.text);
-  }
 
   void initState() {
     fieldToFill = widget.fieldToFillAsKey;
-    controller.text = widget.textAsValue;
+    _controller = TextEditingController(text: widget.textAsValue);
+    super.initState();
+  }
+
+  void updateInfo() {
+    widget.onStopEditing(fieldToFill, _controller.text);
   }
 
   @override
   Widget build(BuildContext context) {
-    print(controller.text);
     return Focus(
         child: TextFormField(
           decoration: InputDecoration(hintText: fieldToFill),
-          controller: controller,
+          controller: _controller,
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
