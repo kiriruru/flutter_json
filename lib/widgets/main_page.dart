@@ -36,7 +36,7 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
   @override
   void initState() {
     super.initState();
-    readJsonConfig();
+    // readJsonConfig();
     readJsonData();
   }
 
@@ -80,6 +80,9 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
                         onStopEditing: onStopEditing,
                       ))
                   .toList());
+        }
+        if (snapshot.hasError) {
+          return Text("Something went wrong");
         } else {
           return Center(
             child: CircularProgressIndicator(),
