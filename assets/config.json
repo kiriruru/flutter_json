@@ -1,0 +1,27 @@
+{
+    "name": {
+        "title": "name",
+        "exampleOfFilling": "Ivan",
+        "hint": "Fill the name from passport"
+    },
+    "surname": {
+        "title": "surname",
+        "exampleOfFilling": "Ivanov",
+        "hint": "Fill the surname from passport"
+    },
+    "age": {
+        "title": "age",
+        "exampleOfFilling": "25",
+        "hint": "Enter age from passport"
+    },
+    "country": {
+        "title": "country",
+        "exampleOfFilling": "Montenegro",
+        "hint": "Enter country of residence"
+    },
+    "city": {
+        "title": "city",
+        "exampleOfFilling": "Budva",
+        "hint": "Enter city"
+    }
+}

@@ -4,57 +4,26 @@ import 'package:flutter/material.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({super.key});
-  final List<String> config = ["name", "surname", "age", "country", "city"];
   final File file = File('assets/example.json');
-  // final Map<String, Map<String, String>> conf = {
-  //   "name": {
-  //     "title": "Name",
-  //     "exampleOfFilling": "Ivan",
-  //     "hint": "Fill the name from passport",
-  //   },
-  //   "surname": {
-  //     "title": "Surname",
-  //     "exampleOfFilling": "Ivanov",
-  //     "hint": "Fill the surname from passport",
-  //   },
-  //   "age": {
-  //     "title": "Age",
-  //     "exampleOfFilling": "25",
-  //     "hint": "Enter age from passport",
-  //   },
-  //   "country": {
-  //     "title": "Country",
-  //     "exampleOfFilling": "Montenegro",
-  //     "hint": "Enter country of residence",
-  //   },
-  //   "city": {
-  //     "title": "City",
-  //     "exampleOfFilling": "Budva",
-  //     "hint": "Enter city",
-  //   },
-  // };
+  final File configFile = File('assets/config.json');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Json"),
-      ),
-      body: AllInputsWidget(
-        file: file,
-        config: config,
-      ),
+      appBar: AppBar(title: const Text("Json")),
+      body: AllInputsWidget(file: file, configFile: configFile),
     );
   }
 }
 
 class AllInputsWidget extends StatefulWidget {
   final File file; // from parent widget
-  final List<String> config; // from parent widget
+  final File configFile; // from parent widget
+
   const AllInputsWidget({
     super.key,
     required this.file,
-    required this.config,
+    required this.configFile,
   });
 
   @override
@@ -63,56 +32,73 @@ class AllInputsWidget extends StatefulWidget {
 
 class _AllInputsWidgetState extends State<AllInputsWidget> {
   Map<String, dynamic> _jsonItem = {};
-  File file = File(""); // from parent widget
-  List<String>? config; // from parent widget
 
   @override
   void initState() {
     super.initState();
-    asyncMethod();
+    readJsonConfig();
+    readJsonData();
   }
 
-  Future<void> asyncMethod() async {
-    file = widget.file;
-    config = widget.config;
-    await readJsonData();
+  Future<Map<String, Map<String, String>>> readJsonConfig() async {
+    final String jsonData = await widget.configFile.readAsString();
+    final Map<String, dynamic> jsonParsed = jsonDecode(jsonData);
+
+    final Map<String, Map<String, String>> finalMapFromJson = {};
+    jsonParsed.forEach((key, value) {
+      finalMapFromJson[key] = value.cast<String, String>();
+    }); //
+    return finalMapFromJson;
   }
 
   Future<void> readJsonData() async {
-    final String jsonData = await file.readAsString();
+    final String jsonData = await widget.file.readAsString();
     final json = jsonDecode(jsonData);
     setState(() => _jsonItem = json);
-    print("JSON from readJsonData $_jsonItem");
   }
 
   Future<void> onStopEditing(key, value) async {
-    setState(() => _jsonItem[key] = value);
-    final jsonDataUpdated = jsonEncode(_jsonItem);
-    await file.writeAsString(jsonDataUpdated);
+    if (_jsonItem[key] != value) {
+      setState(() => _jsonItem[key] = value);
+      final jsonDataUpdated = jsonEncode(_jsonItem);
+      await widget.file.writeAsString(jsonDataUpdated);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-        children: config!
-            .map((String e) => InputWidget(
-                  fieldToFillAsKey: e,
-                  item: _jsonItem,
-                  onStopEditing: onStopEditing,
-                ))
-            .toList());
+    return FutureBuilder(
+      future: readJsonConfig(),
+      builder: (BuildContext context,
+          AsyncSnapshot<Map<String, Map<String, String>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Column(
+              children: snapshot.data!.values
+                  .map((value) => InputWidget(
+                        initValue: _jsonItem[value["title"]] ?? "",
+                        config: value,
+                        onStopEditing: onStopEditing,
+                      ))
+                  .toList());
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
   }
 }
 
 class InputWidget extends StatefulWidget {
-  Map<String, dynamic> item = {}; // from parent widget
-  final String fieldToFillAsKey; // from parent widget
+  final String initValue; // from parent widget
+  final Map<String, String> config; // from parent widget
   final Function onStopEditing; // from parent widget
 
-  InputWidget({
+  const InputWidget({
     super.key,
-    required this.fieldToFillAsKey,
-    required this.item,
+    required this.initValue,
+    required this.config,
     required this.onStopEditing,
   });
 
@@ -121,33 +107,30 @@ class InputWidget extends StatefulWidget {
 }
 
 class _InputWidgetState extends State<InputWidget> {
-  Map<String, dynamic> _item = {};
-  String? _fieldToFill;
-  TextEditingController _controller = TextEditingController();
-
-  void updateInfo() {
-    widget.onStopEditing(_fieldToFill, _controller.text ?? "");
-  }
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
-    super.initState();
-    _item = widget.item;
-    _fieldToFill = widget.fieldToFillAsKey;
-    _controller.text = widget.item[_fieldToFill] ?? "";
-    // print(widget.item);
+    _controller.text = widget.initValue ?? "";
   }
 
   @override
   Widget build(BuildContext context) {
     return Focus(
         child: TextFormField(
-          decoration: InputDecoration(hintText: _fieldToFill),
+          decoration: InputDecoration(
+            labelText: widget.config["title"],
+            hintText: widget.config["hint"],
+            // helperText: widget.config["exampleOfFilling"]
+          ),
           controller: _controller,
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
-          updateInfo();
+          widget.onStopEditing(
+            widget.config["title"],
+            _controller.text,
+          );
         });
   }
 }
