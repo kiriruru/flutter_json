@@ -76,8 +76,7 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
                         ))
                     .toList()),
           );
-        }
-        if (snapshot.hasError) {
+        } else if (snapshot.hasError) {
           return const Text("Something went wrong");
         } else {
           return const Center(child: CircularProgressIndicator());
