@@ -36,7 +36,6 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
   @override
   void initState() {
     super.initState();
-    // readJsonConfig();
     readJsonData();
   }
 
