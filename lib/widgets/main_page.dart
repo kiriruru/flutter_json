@@ -32,33 +32,29 @@ class AllInputsWidget extends StatefulWidget {
 
 class _AllInputsWidgetState extends State<AllInputsWidget> {
   Map<String, dynamic> _jsonItem = {};
+  Map<String, Map<String, String>> _config = {};
 
-  @override
-  void initState() {
-    super.initState();
-    readJsonData();
-  }
-
-  Future<Map<String, Map<String, String>>> readJsonConfig() async {
-    final String jsonData = await widget.configFile.readAsString();
-    final Map<String, dynamic> jsonParsed = jsonDecode(jsonData);
-
-    final Map<String, Map<String, String>> finalMapFromJson = {};
-    jsonParsed.forEach((key, value) {
-      finalMapFromJson[key] = value.cast<String, String>();
-    }); //
-    return finalMapFromJson;
-  }
-
-  Future<void> readJsonData() async {
+  Future<bool> readJsonData() async {
     final String jsonData = await widget.file.readAsString();
-    final json = jsonDecode(jsonData);
-    setState(() => _jsonItem = json);
+    final data = jsonDecode(jsonData);
+
+    final String jsonConfig = await widget.configFile.readAsString();
+    final Map<String, dynamic> jsonConfigParsed = jsonDecode(jsonConfig);
+    final Map<String, Map<String, String>> finalMapFromJson = {};
+    jsonConfigParsed.forEach((key, value) {
+      finalMapFromJson[key] = value.cast<String, String>();
+    });
+
+    setState(() => {
+          _jsonItem = data,
+          _config = finalMapFromJson,
+        });
+    return true;
   }
 
   Future<void> onStopEditing(key, value) async {
     if (_jsonItem[key] != value) {
-      setState(() => _jsonItem[key] = value);
+      _jsonItem[key] = value;
       final jsonDataUpdated = jsonEncode(_jsonItem);
       await widget.file.writeAsString(jsonDataUpdated);
     }
@@ -67,25 +63,24 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: readJsonConfig(),
-      builder: (BuildContext context,
-          AsyncSnapshot<Map<String, Map<String, String>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return Column(
-              children: snapshot.data!.values
-                  .map((value) => InputWidget(
-                        initValue: _jsonItem[value["title"]] ?? "",
-                        config: value,
-                        onStopEditing: onStopEditing,
-                      ))
-                  .toList());
+      future: readJsonData(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData) {
+          return SingleChildScrollView(
+            child: Column(
+                children: _config.values
+                    .map((value) => InputWidget(
+                          initValue: _jsonItem[value["title"]] ?? "",
+                          config: value,
+                          onStopEditing: onStopEditing,
+                        ))
+                    .toList()),
+          );
         }
         if (snapshot.hasError) {
-          return Text("Something went wrong");
+          return const Text("Something went wrong");
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
@@ -129,10 +124,7 @@ class _InputWidgetState extends State<InputWidget> {
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
-          widget.onStopEditing(
-            widget.config["title"],
-            _controller.text,
-          );
+          widget.onStopEditing(widget.config["title"], _controller.text);
         });
   }
 }
