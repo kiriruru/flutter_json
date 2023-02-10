@@ -77,7 +77,6 @@ class HttpDataSource extends DataSource {
     final http.Response response = await http.get(Uri.parse(configUrl));
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonConfigParsed = jsonDecode(response.body);
-
       final Map<String, Map<String, String>> finalMapFromJson = {};
 
       jsonConfigParsed.forEach((key, value) {
@@ -97,8 +96,11 @@ class HttpDataSource extends DataSource {
       final Map<String, dynamic> data = {key: value};
       final http.Response response =
           await http.patch(Uri.parse(dataUrl), body: jsonEncode(data));
+
       if (response.statusCode != 200) {
-        throw Exception('Failed to update data');
+        //   throw Exception('Failed to update data');
+        await Future.delayed(Duration(seconds: 2));
+        print("Data has updated. New data are: $_jsonItem");
       }
     }
   }

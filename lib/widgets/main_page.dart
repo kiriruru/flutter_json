@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_js/interface.dart';
+import '../sources.dart';
 
 class MainPage extends StatelessWidget {
   MainPage({super.key});
@@ -8,10 +9,10 @@ class MainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Json")),
-      body: const AllInputsWidget(
-          source: "local",
-          dataPath: "assets/example.json",
-          configPath: "assets/config.json"),
+      body: AllInputsWidget(
+          source: httpSource.source,
+          dataPath: httpSource.dataPath,
+          configPath: httpSource.configPath),
     );
   }
 }
