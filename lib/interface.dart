@@ -7,8 +7,8 @@ abstract class DataSource {
   final String configPath;
   DataSource(this.dataPath, this.configPath);
 
-  late Map<String, dynamic> _jsonItem;
-  late Map<String, Map<String, String>> _config;
+  late final Map<String, dynamic> _jsonItem;
+  late final Map<String, Map<String, String>> _config;
 
   Map<String, dynamic> get jsonItem => _jsonItem;
   Map<String, Map<String, String>> get config => _config;
@@ -20,7 +20,7 @@ abstract class DataSource {
 class LocalDataSource extends DataSource {
   LocalDataSource(dataPath, configPath) : super(dataPath, configPath);
 
-  Future<dynamic> readLocalFile(localPath) async {
+  Future<dynamic> _readLocalFile(localPath) async {
     final File fileData = File(localPath);
     final String jsonData = await fileData.readAsString();
     return jsonDecode(jsonData);
@@ -28,14 +28,15 @@ class LocalDataSource extends DataSource {
 
   @override
   Future<void> readData() async {
-    final jsonData = await readLocalFile(dataPath);
-    final jsonConfigParsed = await readLocalFile(configPath);
+    final jsonData = await _readLocalFile(dataPath);
+    _jsonItem = jsonData;
+
+    final jsonConfigParsed = await _readLocalFile(configPath);
     final Map<String, Map<String, String>> finalMapFromJson = {};
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();
     });
 
-    _jsonItem = jsonData;
     _config = finalMapFromJson;
   }
 
@@ -53,7 +54,7 @@ class LocalDataSource extends DataSource {
 class HttpDataSource extends DataSource {
   HttpDataSource(dataPath, configPath) : super(dataPath, configPath);
 
-  Future<dynamic> readHttpInf(url) async {
+  Future<dynamic> _readHttpInf(url) async {
     final http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -64,8 +65,8 @@ class HttpDataSource extends DataSource {
 
   @override
   Future<void> readData() async {
-    final jsonData = await readHttpInf(dataPath);
-    final jsonConfigParsed = await readHttpInf(configPath);
+    final jsonData = await _readHttpInf(dataPath);
+    final jsonConfigParsed = await _readHttpInf(configPath);
     final Map<String, Map<String, String>> finalMapFromJson = {};
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();

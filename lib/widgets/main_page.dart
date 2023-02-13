@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_js/interface.dart';
+import '../interface.dart';
 
 class MainPage extends StatelessWidget {
   DataSource dataSource;
@@ -14,17 +14,12 @@ class MainPage extends StatelessWidget {
   }
 }
 
-class AllInputsWidget extends StatefulWidget {
+class AllInputsWidget extends StatelessWidget {
   final DataSource dataSource;
   const AllInputsWidget({super.key, required this.dataSource});
 
-  @override
-  State<AllInputsWidget> createState() => _AllInputsWidgetState();
-}
-
-class _AllInputsWidgetState extends State<AllInputsWidget> {
   Future<bool> readJsonData() async {
-    await widget.dataSource.readData();
+    await dataSource.readData();
     return true;
   }
 
@@ -36,12 +31,11 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
         if (snapshot.hasData) {
           return SingleChildScrollView(
             child: Column(
-                children: widget.dataSource.config.values
+                children: dataSource.config.values
                     .map((value) => InputWidget(
-                          initValue:
-                              widget.dataSource.jsonItem[value["title"]] ?? "",
+                          initValue: dataSource.jsonItem[value["title"]] ?? "",
                           config: value,
-                          onStopEditing: widget.dataSource.updateData,
+                          onStopEditing: dataSource.updateData,
                         ))
                     .toList()),
           );
@@ -55,28 +49,19 @@ class _AllInputsWidgetState extends State<AllInputsWidget> {
   }
 }
 
-class InputWidget extends StatefulWidget {
+class InputWidget extends StatelessWidget {
   final String initValue; // from parent widget
   final Map<String, String> config; // from parent widget
   final Function onStopEditing; // from parent widget
+  final TextEditingController _controller = TextEditingController();
 
-  const InputWidget({
+  InputWidget({
     super.key,
     required this.initValue,
     required this.config,
     required this.onStopEditing,
-  });
-
-  @override
-  State<InputWidget> createState() => _InputWidgetState();
-}
-
-class _InputWidgetState extends State<InputWidget> {
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  void initState() {
-    _controller.text = widget.initValue ?? "";
+  }) {
+    _controller.text = initValue ?? "";
   }
 
   @override
@@ -84,14 +69,14 @@ class _InputWidgetState extends State<InputWidget> {
     return Focus(
         child: TextFormField(
           decoration: InputDecoration(
-            labelText: widget.config["title"],
-            hintText: widget.config["hint"],
+            labelText: config["title"],
+            hintText: config["hint"],
           ),
           controller: _controller,
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
-          widget.onStopEditing(widget.config["title"], _controller.text);
+          onStopEditing(config["title"], _controller.text);
         });
   }
 }
