@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_js/interface.dart';
+import 'package:flutter_js/sources.dart';
 import 'package:flutter_js/widgets/main_page.dart';
 
 class App extends StatelessWidget {
@@ -11,7 +13,12 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MainPage(),
+      home: MainPage(
+        dataSource: LocalDataSource(
+          localSource.dataPath,
+          localSource.configPath,
+        ),
+      ),
     );
   }
 }
