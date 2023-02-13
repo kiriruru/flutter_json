@@ -15,8 +15,6 @@ abstract class DataSource {
 
   Future<void> readData();
   Future<void> updateData(key, value);
-
-  // Future<void> readConfig();
 }
 
 class LocalDataSource extends DataSource {
@@ -25,29 +23,20 @@ class LocalDataSource extends DataSource {
   Future<dynamic> readLocalFile(localPath) async {
     final File fileData = File(localPath);
     final String jsonData = await fileData.readAsString();
-    final data = jsonDecode(jsonData);
-    return data;
+    return jsonDecode(jsonData);
   }
 
   @override
   Future<void> readData() async {
     final jsonData = await readLocalFile(dataPath);
     final jsonConfigParsed = await readLocalFile(configPath);
-
-    // final File fileData = File(dataPath);
-    // final String jsonData = await fileData.readAsString();
-    // final data = jsonDecode(jsonData);
-
     final Map<String, Map<String, String>> finalMapFromJson = {};
-
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();
     });
+
     _jsonItem = jsonData;
     _config = finalMapFromJson;
-    // final File file = File(configPath);
-    // final String jsonConfig = await file.readAsString();
-    // final Map<String, dynamic> jsonConfigParsed = jsonDecode(jsonConfig);
   }
 
   @override
@@ -59,74 +48,43 @@ class LocalDataSource extends DataSource {
       await file.writeAsString(jsonDataUpdated);
     }
   }
-  // @override
-  // Future<Map<String, Map<String, String>>> readConfig() async {
-  //   final File file = File(configPath);
-  //   final String jsonConfig = await file.readAsString();
-  //   final Map<String, dynamic> jsonConfigParsed = jsonDecode(jsonConfig);
-
-  //   final Map<String, Map<String, String>> finalMapFromJson = {};
-
-  //   jsonConfigParsed.forEach((key, value) {
-  //     finalMapFromJson[key] = value.cast<String, String>();
-  //   });
-
-  //   _config = finalMapFromJson;
-  //   return _config;
-  // }
-
 }
 
-// class HttpDataSource extends DataSource {
-//   final String dataUrl;
-//   final String configUrl;
+class HttpDataSource extends DataSource {
+  HttpDataSource(dataPath, configPath) : super(dataPath, configPath);
 
-//   HttpDataSource(this.dataUrl, this.configUrl);
-//   Map<String, dynamic> _jsonItem = {};
-//   Map<String, Map<String, String>> _config = {};
+  Future<dynamic> readHttpInf(url) async {
+    final http.Response response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load data from $url');
+    }
+  }
 
-//   @override
-//   Future<Map<String, dynamic>> readData() async {
-//     final http.Response response = await http.get(Uri.parse(dataUrl));
-//     if (response.statusCode == 200) {
-//       final data = jsonDecode(response.body);
-//       _jsonItem = data;
-//       return _jsonItem;
-//     } else {
-//       throw Exception('Failed to load data from URL');
-//     }
-//   }
+  @override
+  Future<void> readData() async {
+    final jsonData = await readHttpInf(dataPath);
+    final jsonConfigParsed = await readHttpInf(configPath);
+    final Map<String, Map<String, String>> finalMapFromJson = {};
+    jsonConfigParsed.forEach((key, value) {
+      finalMapFromJson[key] = value.cast<String, String>();
+    });
 
-//   @override
-//   Future<Map<String, Map<String, String>>> readConfig() async {
-//     final http.Response response = await http.get(Uri.parse(configUrl));
-//     if (response.statusCode == 200) {
-//       final Map<String, dynamic> jsonConfigParsed = jsonDecode(response.body);
-//       final Map<String, Map<String, String>> finalMapFromJson = {};
+    _jsonItem = jsonData;
+    _config = finalMapFromJson;
+  }
 
-//       jsonConfigParsed.forEach((key, value) {
-//         finalMapFromJson[key] = value.cast<String, String>();
-//       });
-
-//       _config = finalMapFromJson;
-//       return _config;
-//     } else {
-//       throw Exception('Failed to load config from URL');
-//     }
-//   }
-
-//   @override
-//   Future<void> updateData(key, value) async {
-//     if (_jsonItem[key] != value) {
-//       final Map<String, dynamic> data = {key: value};
-//       final http.Response response =
-//           await http.patch(Uri.parse(dataUrl), body: jsonEncode(data));
-
-//       if (response.statusCode != 200) {
-//         //   throw Exception('Failed to update data');
-//         await Future.delayed(Duration(seconds: 2));
-//         print("Data has updated. New data are: $_jsonItem");
-//       }
-//     }
-//   }
-// }
+  @override
+  Future<void> updateData(key, value) async {
+    if (_jsonItem[key] != value) {
+      final Map<String, dynamic> data = {key: value};
+      final http.Response response =
+          await http.patch(Uri.parse(dataPath), body: jsonEncode(data));
+      if (response.statusCode != 200) {
+        await Future.delayed(Duration(seconds: 2));
+        print("Data has updated. New data are: $_jsonItem");
+      }
+    }
+  }
+}

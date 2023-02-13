@@ -14,9 +14,9 @@ class App extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(
-        dataSource: LocalDataSource(
-          localSource.dataPath,
-          localSource.configPath,
+        dataSource: HttpDataSource(
+          httpSource.dataPath,
+          httpSource.configPath,
         ),
       ),
     );

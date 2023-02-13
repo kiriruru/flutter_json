@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_js/interface.dart';
-import '../sources.dart';
 
 class MainPage extends StatelessWidget {
   DataSource dataSource;
@@ -18,6 +17,7 @@ class MainPage extends StatelessWidget {
 class AllInputsWidget extends StatefulWidget {
   final DataSource dataSource;
   const AllInputsWidget({super.key, required this.dataSource});
+
   @override
   State<AllInputsWidget> createState() => _AllInputsWidgetState();
 }
