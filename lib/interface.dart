@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:pocketbase/pocketbase.dart';
 
 abstract class DataSource {
   final String dataPath;
@@ -65,6 +66,12 @@ class HttpDataSource extends DataSource {
 
   @override
   Future<void> readData() async {
+    // final pb = PocketBase(dataPath);
+    // final authData = await pb.admins
+    //     .authWithPassword('alimardon007@gmail.com', '5544332211');
+
+    // final record = await pb.collection('testUsers').getOne('qcyj0dwatxekh0i');
+
     final jsonData = await _readHttpInf(dataPath);
     final jsonConfigParsed = await _readHttpInf(configPath);
     final Map<String, Map<String, String>> finalMapFromJson = {};
@@ -86,6 +93,51 @@ class HttpDataSource extends DataSource {
         await Future.delayed(Duration(seconds: 2));
         print("Data has updated. New data are: $_jsonItem");
       }
+    }
+  }
+}
+
+class PocketBaseDataSource extends DataSource {
+  PocketBaseDataSource(super.dataPath, super.configPath);
+
+  Future<dynamic> _readLocalFile(localPath) async {
+    final File fileData = File(localPath);
+    final String jsonData = await fileData.readAsString();
+    return jsonDecode(jsonData);
+  }
+
+  @override
+  Future<void> readData() async {
+    final pb = PocketBase(dataPath);
+    final authData = await pb.admins
+        .authWithPassword('alimardon007@gmail.com', '5544332211');
+    final record = await pb.collection('testUsers').getOne('6o8x3dj0mvkemyn');
+    Map<String, dynamic> pbItem = jsonDecode(record.toString());
+    pbItem.forEach((key, value) {
+      if (key == "json") _jsonItem = value;
+    });
+
+    final jsonConfigParsed = await _readLocalFile(configPath);
+    final Map<String, Map<String, String>> finalMapFromJson = {};
+    jsonConfigParsed.forEach((key, value) {
+      finalMapFromJson[key] = value.cast<String, String>();
+    });
+
+    _config = finalMapFromJson;
+  }
+
+  @override
+  Future<void> updateData(key, value) async {
+    if (_jsonItem[key] != value) {
+      final pb = PocketBase("http://127.0.0.1:8090");
+      final authData = await pb.admins
+          .authWithPassword('alimardon007@gmail.com', '5544332211');
+
+      _jsonItem[key] = value;
+      final jsonDataUpdated = jsonEncode(_jsonItem);
+
+      final body = <String, dynamic>{"json": jsonDataUpdated};
+      await pb.collection('testUsers').update('6o8x3dj0mvkemyn', body: body);
     }
   }
 }

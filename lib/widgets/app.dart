@@ -14,10 +14,16 @@ class App extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MainPage(
-        dataSource: LocalDataSource(
-          localSource.dataPath,
-          localSource.configPath,
+        dataSource: PocketBaseDataSource(
+          pocketBaseSource.dataPath,
+          pocketBaseSource.configPath,
         ),
+
+        // LocalDataSource(
+        //   localSource.dataPath,
+        //   localSource.configPath,
+        // ),
+
         // HttpDataSource(
         //   httpSource.dataPath,
         //   httpSource.configPath,
