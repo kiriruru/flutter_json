@@ -66,20 +66,15 @@ class HttpDataSource extends DataSource {
 
   @override
   Future<void> readData() async {
-    // final pb = PocketBase(dataPath);
-    // final authData = await pb.admins
-    //     .authWithPassword('alimardon007@gmail.com', '5544332211');
-
-    // final record = await pb.collection('testUsers').getOne('qcyj0dwatxekh0i');
-
     final jsonData = await _readHttpInf(dataPath);
+    _jsonItem = jsonData;
+
     final jsonConfigParsed = await _readHttpInf(configPath);
     final Map<String, Map<String, String>> finalMapFromJson = {};
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();
     });
 
-    _jsonItem = jsonData;
     _config = finalMapFromJson;
   }
 
@@ -98,7 +93,8 @@ class HttpDataSource extends DataSource {
 }
 
 class PocketBaseDataSource extends DataSource {
-  PocketBaseDataSource(super.dataPath, super.configPath);
+  final String id;
+  PocketBaseDataSource(super.dataPath, super.configPath, this.id);
 
   Future<dynamic> _readLocalFile(localPath) async {
     final File fileData = File(localPath);
@@ -111,9 +107,14 @@ class PocketBaseDataSource extends DataSource {
     final pb = PocketBase(dataPath);
     final authData = await pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
-    final record = await pb.collection('testUsers').getOne('6o8x3dj0mvkemyn');
 
-    _jsonItem = record.data["json"];
+    if (id != "") {
+      final record = await pb.collection('testUsers').getOne(id);
+      _jsonItem = record.data["json"];
+    } else {
+      print("error fetchin data by this id: $id");
+      _jsonItem = Map();
+    }
 
     final jsonConfigParsed = await _readLocalFile(configPath);
     final Map<String, Map<String, String>> finalMapFromJson = {};

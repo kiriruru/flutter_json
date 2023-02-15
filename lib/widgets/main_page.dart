@@ -1,43 +1,83 @@
 import 'package:flutter/material.dart';
-import '../interface.dart';
+import 'package:pocketbase/pocketbase.dart';
+import '../utils/SourceOfData.dart';
+import './config_inputs.dart';
+import '../classes/DataSource.dart';
 
 class MainPage extends StatelessWidget {
-  DataSource dataSource;
-  MainPage({super.key, required this.dataSource});
+  SourceOfData pocketBaseSource = SourceOfData(
+    configPath: "assets/config.json",
+    dataPath: "http://127.0.0.1:8090",
+    id: "6o8x3dj0mvkemyn",
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Json")),
-      body: AllInputsWidget(dataSource: dataSource),
+      body: Container(
+        width: double.infinity,
+        child: Row(
+          children: <Widget>[
+            Expanded(child: UsersListWidget()),
+            Expanded(
+                child: ConfigInputsWidget(
+              dataSource: PocketBaseDataSource(
+                pocketBaseSource.dataPath,
+                pocketBaseSource.configPath,
+                pocketBaseSource.id,
+              ),
+              // LocalDataSource(
+              //   localSource.dataPath,
+              //   localSource.configPath,
+              // ),
+              // HttpDataSource(
+              //   httpSource.dataPath,
+              //   httpSource.configPath,
+              // ),
+            )),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class AllInputsWidget extends StatelessWidget {
-  final DataSource dataSource;
-  const AllInputsWidget({super.key, required this.dataSource});
+class UsersListWidget extends StatelessWidget {
+  UsersListWidget({
+    Key? key,
+  }) : super(key: key);
 
-  Future<bool> readJsonData() async {
-    await dataSource.readData();
+  List<RecordModel> usersList = [];
+
+  Future<bool> getUsers() async {
+    final pb = PocketBase('http://127.0.0.1:8090');
+    final authData = await pb.admins
+        .authWithPassword('alimardon007@gmail.com', '5544332211');
+    final records = await pb.collection('testUsers').getFullList();
+    usersList = records;
+    print("usersList: $usersList");
+
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: readJsonData(),
+      future: getUsers(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
           return SingleChildScrollView(
             child: Column(
-                children: dataSource.config.values
-                    .map((value) => InputWidget(
-                          initValue: dataSource.jsonItem[value["title"]] ?? "",
-                          config: value,
-                          onStopEditing: dataSource.updateData,
-                        ))
-                    .toList()),
+              children: usersList
+                  .map((e) => ListTile(
+                        leading: Icon(Icons.person),
+                        title: Text("${e.data["json"]["name"]}"),
+                        subtitle: Text("${e.data["json"]["email"]}"),
+                        onTap: () {},
+                      ))
+                  .toList(),
+            ),
           );
         } else if (snapshot.hasError) {
           return const Text("Something went wrong");
@@ -46,37 +86,5 @@ class AllInputsWidget extends StatelessWidget {
         }
       },
     );
-  }
-}
-
-class InputWidget extends StatelessWidget {
-  final String initValue; // from parent widget
-  final Map<String, String> config; // from parent widget
-  final Function onStopEditing; // from parent widget
-  final TextEditingController _controller = TextEditingController();
-
-  InputWidget({
-    super.key,
-    required this.initValue,
-    required this.config,
-    required this.onStopEditing,
-  }) {
-    _controller.text = initValue ?? "";
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Focus(
-        child: TextFormField(
-          decoration: InputDecoration(
-            labelText: config["title"],
-            hintText: config["hint"],
-          ),
-          controller: _controller,
-        ),
-        onFocusChange: (hasFocus) {
-          if (hasFocus) return;
-          onStopEditing(config["title"], _controller.text);
-        });
   }
 }
