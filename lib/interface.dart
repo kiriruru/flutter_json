@@ -112,10 +112,8 @@ class PocketBaseDataSource extends DataSource {
     final authData = await pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
     final record = await pb.collection('testUsers').getOne('6o8x3dj0mvkemyn');
-    Map<String, dynamic> pbItem = jsonDecode(record.toString());
-    pbItem.forEach((key, value) {
-      if (key == "json") _jsonItem = value;
-    });
+
+    _jsonItem = record.data["json"];
 
     final jsonConfigParsed = await _readLocalFile(configPath);
     final Map<String, Map<String, String>> finalMapFromJson = {};
