@@ -6,6 +6,7 @@ class ConfigInputsWidget extends StatelessWidget {
   const ConfigInputsWidget({super.key, required this.dataSource});
 
   Future<bool> readJsonData() async {
+    await dataSource.getUsersData();
     await dataSource.readData();
     return true;
   }

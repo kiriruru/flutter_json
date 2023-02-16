@@ -16,6 +16,7 @@ abstract class DataSource {
 
   Future<void> readData();
   Future<void> updateData(key, value);
+  Future<void> getUsersData();
 }
 
 class LocalDataSource extends DataSource {
@@ -50,6 +51,9 @@ class LocalDataSource extends DataSource {
       await file.writeAsString(jsonDataUpdated);
     }
   }
+
+  @override
+  Future<void> getUsersData() async {}
 }
 
 class HttpDataSource extends DataSource {
@@ -90,16 +94,31 @@ class HttpDataSource extends DataSource {
       }
     }
   }
+
+  @override
+  Future<void> getUsersData() async {}
 }
 
 class PocketBaseDataSource extends DataSource {
   final String id;
+
   PocketBaseDataSource(super.dataPath, super.configPath, this.id);
+
+  late final List<RecordModel> usersList;
 
   Future<dynamic> _readLocalFile(localPath) async {
     final File fileData = File(localPath);
     final String jsonData = await fileData.readAsString();
     return jsonDecode(jsonData);
+  }
+
+  Future<void> getUsersData() async {
+    final pb = PocketBase(dataPath);
+    final authData = await pb.admins
+        .authWithPassword('alimardon007@gmail.com', '5544332211');
+
+    final records = await pb.collection('testUsers').getFullList();
+    usersList = records;
   }
 
   @override
@@ -108,15 +127,21 @@ class PocketBaseDataSource extends DataSource {
     final authData = await pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
 
-    if (id != "") {
-      final record = await pb.collection('testUsers').getOne(id);
-      _jsonItem = record.data["json"];
+    if (id != null) {
+      try {
+        final record = await pb.collection('testUsers').getOne(id);
+        _jsonItem = record.data["json"];
+      } catch (e) {
+        print("error fetchin data by this id: $id");
+      }
     } else {
-      print("error fetchin data by this id: $id");
+      print("There is no data");
       _jsonItem = Map();
     }
 
-    final jsonConfigParsed = await _readLocalFile(configPath);
+    final File fileData = File(configPath);
+    final String jsonData = await fileData.readAsString();
+    final jsonConfigParsed = jsonDecode(jsonData);
     final Map<String, Map<String, String>> finalMapFromJson = {};
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();
