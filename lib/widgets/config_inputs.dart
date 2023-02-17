@@ -17,12 +17,13 @@ class ConfigInputsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (userChosen == false) {
       return Center(
-          child: Row(
-        children: [
-          Icon(Icons.arrow_back),
-          Text("Select user"),
-        ],
-      ));
+        child: Row(
+          children: [
+            Icon(Icons.arrow_back),
+            Text("Select user"),
+          ],
+        ),
+      );
     } else {
       return FutureBuilder(
         future: readJsonData(),

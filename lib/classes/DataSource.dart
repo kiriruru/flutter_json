@@ -6,7 +6,7 @@ import 'package:pocketbase/pocketbase.dart';
 abstract class DataSource {
   final String dataPath;
   final String configPath;
-  final String id;
+  String id;
   DataSource(this.dataPath, this.configPath, this.id);
 
   late final Map<String, dynamic> _jsonItem;
