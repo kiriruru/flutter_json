@@ -9,7 +9,7 @@ class ConfigInputsWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
 
   Future<bool> readJsonData() async {
-    await dataSource.readData();
+    await dataSource.readData("m1mp1we40u2yq7n");
     return true;
   }
 

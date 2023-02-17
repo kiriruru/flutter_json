@@ -6,8 +6,7 @@ import 'package:pocketbase/pocketbase.dart';
 abstract class DataSource {
   final String dataPath;
   final String configPath;
-  String id;
-  DataSource(this.dataPath, this.configPath, this.id);
+  DataSource(this.dataPath, this.configPath);
 
   late final Map<String, dynamic> _jsonItem;
   late final Map<String, Map<String, String>> _config;
@@ -17,13 +16,13 @@ abstract class DataSource {
   Map<String, Map<String, String>> get config => _config;
   List<dynamic> get usersList => _usersList;
 
-  Future<void> readData();
-  Future<void> updateData(key, value);
+  Future<void> readData(String id);
+  Future<void> updateData(String key, String value);
   Future<void> getUsersData();
 }
 
 class LocalDataSource extends DataSource {
-  LocalDataSource(super.dataPath, super.configPath, super.id);
+  LocalDataSource(super.dataPath, super.configPath);
 
   Future<dynamic> _readLocalFile(localPath) async {
     final File fileData = File(localPath);
@@ -32,7 +31,7 @@ class LocalDataSource extends DataSource {
   }
 
   @override
-  Future<void> readData() async {
+  Future<void> readData(id) async {
     final jsonData = await _readLocalFile(dataPath);
     _jsonItem = jsonData;
 
@@ -60,7 +59,7 @@ class LocalDataSource extends DataSource {
 }
 
 class HttpDataSource extends DataSource {
-  HttpDataSource(super.dataPath, super.configPath, super.id);
+  HttpDataSource(super.dataPath, super.configPath);
   Future<dynamic> _readHttpInf(url) async {
     final http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -71,7 +70,7 @@ class HttpDataSource extends DataSource {
   }
 
   @override
-  Future<void> readData() async {
+  Future<void> readData(id) async {
     final jsonData = await _readHttpInf(dataPath);
     _jsonItem = jsonData;
 
@@ -102,27 +101,25 @@ class HttpDataSource extends DataSource {
 }
 
 class PocketBaseDataSource extends DataSource {
-  PocketBaseDataSource(super.dataPath, super.configPath, super.id);
+  PocketBaseDataSource(super.dataPath, super.configPath);
+  late final _pb;
+  late final _authData;
 
   @override
   Future<void> getUsersData() async {
-    final pb = PocketBase(dataPath);
-    final authData = await pb.admins
+    _pb = PocketBase(dataPath);
+    _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
 
-    final records = await pb.collection('testUsers').getFullList();
+    final records = await _pb.collection('testUsers').getFullList();
     _usersList = records;
   }
 
   @override
-  Future<void> readData() async {
-    final pb = PocketBase(dataPath);
-    final authData = await pb.admins
-        .authWithPassword('alimardon007@gmail.com', '5544332211');
-
+  Future<void> readData(id) async {
     if (id != null) {
       try {
-        final record = await pb.collection('testUsers').getOne(id);
+        final record = await _pb.collection('testUsers').getOne(id);
         _jsonItem = record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");

@@ -19,13 +19,13 @@ class AppWidget extends StatelessWidget {
 }
 
 class AppModule extends Module {
-  final DataSource dataSourceIns = PocketBaseDataSource(
-    "http://127.0.0.1:8090",
-    "assets/config.json",
-    "6o8x3dj0mvkemyn",
-  );
   @override
-  List<Bind> get binds => [Bind.singleton((i) => dataSourceIns)];
+  List<Bind> get binds => [
+        Bind.singleton((i) => PocketBaseDataSource(
+              "http://127.0.0.1:8090",
+              "assets/config.json",
+            ))
+      ];
 
   List<ModularRoute> get routes => [
         ChildRoute('/', child: (context, args) => HomePage()),

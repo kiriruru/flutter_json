@@ -28,8 +28,6 @@ class UsersListWidget extends StatelessWidget {
                         subtitle: Text("${e.data["json"]["email"]}"),
                         onTap: () {
                           userChosen = true;
-                          dataSource.id = e.id;
-                          print(dataSource.id);
                         },
                       ))
                   .toList(),
