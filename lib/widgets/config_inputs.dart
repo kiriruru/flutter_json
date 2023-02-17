@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import '../classes/DataSource.dart';
 
 class ConfigInputsWidget extends StatelessWidget {
-  final DataSource dataSource;
-  const ConfigInputsWidget({super.key, required this.dataSource});
+  final dataSource = Modular.get<DataSource>();
 
   Future<bool> readJsonData() async {
-    await dataSource.getUsersData();
     await dataSource.readData();
     return true;
   }

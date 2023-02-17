@@ -10,9 +10,11 @@ abstract class DataSource {
 
   late final Map<String, dynamic> _jsonItem;
   late final Map<String, Map<String, String>> _config;
+  late final List<dynamic> _usersList;
 
   Map<String, dynamic> get jsonItem => _jsonItem;
   Map<String, Map<String, String>> get config => _config;
+  List<dynamic> get usersList => _usersList;
 
   Future<void> readData();
   Future<void> updateData(key, value);
@@ -104,21 +106,14 @@ class PocketBaseDataSource extends DataSource {
 
   PocketBaseDataSource(super.dataPath, super.configPath, this.id);
 
-  late final List<RecordModel> usersList;
-
-  Future<dynamic> _readLocalFile(localPath) async {
-    final File fileData = File(localPath);
-    final String jsonData = await fileData.readAsString();
-    return jsonDecode(jsonData);
-  }
-
+  @override
   Future<void> getUsersData() async {
     final pb = PocketBase(dataPath);
     final authData = await pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
 
     final records = await pb.collection('testUsers').getFullList();
-    usersList = records;
+    _usersList = records;
   }
 
   @override
