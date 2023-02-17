@@ -3,6 +3,9 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../classes/DataSource.dart';
 
 class UsersListWidget extends StatelessWidget {
+  bool userChosen;
+
+  UsersListWidget(this.userChosen, {super.key});
   final dataSource = Modular.get<DataSource>();
 
   Future<bool> getUsers() async {
@@ -23,7 +26,10 @@ class UsersListWidget extends StatelessWidget {
                         leading: Icon(Icons.person),
                         title: Text("${e.data["json"]["name"]}"),
                         subtitle: Text("${e.data["json"]["email"]}"),
-                        onTap: () {},
+                        onTap: () {
+                          userChosen = true;
+                          print(userChosen);
+                        },
                       ))
                   .toList(),
             ),

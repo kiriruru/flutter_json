@@ -6,7 +6,8 @@ import 'package:pocketbase/pocketbase.dart';
 abstract class DataSource {
   final String dataPath;
   final String configPath;
-  DataSource(this.dataPath, this.configPath);
+  final String id;
+  DataSource(this.dataPath, this.configPath, this.id);
 
   late final Map<String, dynamic> _jsonItem;
   late final Map<String, Map<String, String>> _config;
@@ -22,7 +23,7 @@ abstract class DataSource {
 }
 
 class LocalDataSource extends DataSource {
-  LocalDataSource(dataPath, configPath) : super(dataPath, configPath);
+  LocalDataSource(super.dataPath, super.configPath, super.id);
 
   Future<dynamic> _readLocalFile(localPath) async {
     final File fileData = File(localPath);
@@ -59,8 +60,7 @@ class LocalDataSource extends DataSource {
 }
 
 class HttpDataSource extends DataSource {
-  HttpDataSource(dataPath, configPath) : super(dataPath, configPath);
-
+  HttpDataSource(super.dataPath, super.configPath, super.id);
   Future<dynamic> _readHttpInf(url) async {
     final http.Response response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
@@ -102,9 +102,7 @@ class HttpDataSource extends DataSource {
 }
 
 class PocketBaseDataSource extends DataSource {
-  final String id;
-
-  PocketBaseDataSource(super.dataPath, super.configPath, this.id);
+  PocketBaseDataSource(super.dataPath, super.configPath, super.id);
 
   @override
   Future<void> getUsersData() async {
