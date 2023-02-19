@@ -18,7 +18,7 @@ abstract class DataSource {
 
   Future<void> readData(String id);
   Future<void> updateData(String key, String value);
-  Future<void> getUsersData();
+  Future<void> getInitData();
 }
 
 class LocalDataSource extends DataSource {
@@ -55,7 +55,7 @@ class LocalDataSource extends DataSource {
   }
 
   @override
-  Future<void> getUsersData() async {}
+  Future<void> getInitData() async {}
 }
 
 class HttpDataSource extends DataSource {
@@ -97,7 +97,7 @@ class HttpDataSource extends DataSource {
   }
 
   @override
-  Future<void> getUsersData() async {}
+  Future<void> getInitData() async {}
 }
 
 class PocketBaseDataSource extends DataSource {
@@ -106,13 +106,22 @@ class PocketBaseDataSource extends DataSource {
   late final _authData;
 
   @override
-  Future<void> getUsersData() async {
+  Future<void> getInitData() async {
     _pb = PocketBase(dataPath);
     _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
-
     final records = await _pb.collection('testUsers').getFullList();
     _usersList = records;
+
+    final File fileData = File(configPath);
+    final String jsonData = await fileData.readAsString();
+    final jsonConfigParsed = jsonDecode(jsonData);
+    final Map<String, Map<String, String>> finalMapFromJson = {};
+    jsonConfigParsed.forEach((key, value) {
+      finalMapFromJson[key] = value.cast<String, String>();
+    });
+
+    _config = finalMapFromJson;
   }
 
   @override
@@ -128,16 +137,6 @@ class PocketBaseDataSource extends DataSource {
       print("There is no data");
       _jsonItem = Map();
     }
-
-    final File fileData = File(configPath);
-    final String jsonData = await fileData.readAsString();
-    final jsonConfigParsed = jsonDecode(jsonData);
-    final Map<String, Map<String, String>> finalMapFromJson = {};
-    jsonConfigParsed.forEach((key, value) {
-      finalMapFromJson[key] = value.cast<String, String>();
-    });
-
-    _config = finalMapFromJson;
   }
 
   @override
