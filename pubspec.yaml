@@ -20,6 +20,8 @@ dependencies:
     http: ^0.13.5
     pocketbase: ^0.7.2
     flutter_modular: any
+    flutter_bloc: ^8.0.0
+    bloc: ^8.0.0
 
 dev_dependencies:
     flutter_test:

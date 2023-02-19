@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import '../cubit/chosen_cubit.dart';
 import '../classes/DataSource.dart';
 
 class ConfigInputsWidget extends StatelessWidget {
-  bool userChosen;
-  ConfigInputsWidget(this.userChosen, {super.key});
-
+  ConfigInputsWidget({super.key});
   final dataSource = Modular.get<DataSource>();
 
   Future<bool> readJsonData() async {
@@ -15,39 +15,43 @@ class ConfigInputsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (userChosen == false) {
-      return Center(
-        child: Row(
-          children: [
-            Icon(Icons.arrow_back),
-            Text("Select user"),
-          ],
-        ),
-      );
-    } else {
-      return FutureBuilder(
-        future: readJsonData(),
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          if (snapshot.hasData) {
-            return SingleChildScrollView(
-              child: Column(
-                  children: dataSource.config.values
-                      .map((value) => InputWidget(
-                            initValue:
-                                dataSource.jsonItem[value["title"]] ?? "",
-                            config: value,
-                            onStopEditing: dataSource.updateData,
-                          ))
-                      .toList()),
-            );
-          } else if (snapshot.hasError) {
-            return const Text("Something went wrong");
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      );
-    }
+    final cubit = BlocProvider.of<ChosenUserCubit>(context);
+
+    return BlocBuilder<ChosenUserCubit, bool>(builder: (context, state) {
+      if (cubit.state == false) {
+        return Center(
+          child: Row(
+            children: [
+              Icon(Icons.arrow_back),
+              Text("Select user"),
+            ],
+          ),
+        );
+      } else {
+        return FutureBuilder(
+          future: readJsonData(),
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            if (snapshot.hasData) {
+              return SingleChildScrollView(
+                child: Column(
+                    children: dataSource.config.values
+                        .map((value) => InputWidget(
+                              initValue:
+                                  dataSource.jsonItem[value["title"]] ?? "",
+                              config: value,
+                              onStopEditing: dataSource.updateData,
+                            ))
+                        .toList()),
+              );
+            } else if (snapshot.hasError) {
+              return const Text("Something went wrong");
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        );
+      }
+    });
   }
 }
 

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../classes/DataSource.dart';
+import '../cubit/chosen_cubit.dart';
 
 class UsersListWidget extends StatelessWidget {
-  bool userChosen;
+  UsersListWidget({super.key});
+  // final cubit = ChosenUserCubit(false);
 
-  UsersListWidget(this.userChosen, {super.key});
   final dataSource = Modular.get<DataSource>();
 
   Future<bool> getUsers() async {
@@ -15,6 +17,7 @@ class UsersListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<ChosenUserCubit>(context);
     return FutureBuilder(
       future: getUsers(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -27,7 +30,9 @@ class UsersListWidget extends StatelessWidget {
                         title: Text("${e.data["json"]["name"]}"),
                         subtitle: Text("${e.data["json"]["email"]}"),
                         onTap: () {
-                          userChosen = true;
+                          cubit.choseUser();
+                          print(cubit.state);
+                          // cubit.close();
                         },
                       ))
                   .toList(),
