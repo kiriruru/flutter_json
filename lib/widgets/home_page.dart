@@ -13,7 +13,7 @@ class HomePage extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: BlocProvider(
-        create: (_) => ChosenUserCubit(false),
+        create: (_) => ChosenUserCubit(""),
         child: Scaffold(
           appBar: AppBar(title: const Text("Json")),
           body: Container(

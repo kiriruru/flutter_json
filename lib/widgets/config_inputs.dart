@@ -8,8 +8,8 @@ class ConfigInputsWidget extends StatelessWidget {
   ConfigInputsWidget({super.key});
   final dataSource = Modular.get<DataSource>();
 
-  Future<bool> readJsonData() async {
-    await dataSource.readData("m1mp1we40u2yq7n");
+  Future<bool> readJsonData(id) async {
+    await dataSource.readData(id);
     return true;
   }
 
@@ -17,8 +17,8 @@ class ConfigInputsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = BlocProvider.of<ChosenUserCubit>(context);
 
-    return BlocBuilder<ChosenUserCubit, bool>(builder: (context, state) {
-      if (cubit.state == false) {
+    return BlocBuilder<ChosenUserCubit, String>(builder: (context, state) {
+      if (cubit.state == null || cubit.state == "") {
         return Center(
           child: Row(
             children: [
@@ -29,7 +29,7 @@ class ConfigInputsWidget extends StatelessWidget {
         );
       } else {
         return FutureBuilder(
-          future: readJsonData(),
+          future: readJsonData(cubit.state),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.hasData) {
               return SingleChildScrollView(

@@ -6,7 +6,6 @@ import '../cubit/chosen_cubit.dart';
 
 class UsersListWidget extends StatelessWidget {
   UsersListWidget({super.key});
-  // final cubit = ChosenUserCubit(false);
 
   final dataSource = Modular.get<DataSource>();
 
@@ -30,9 +29,9 @@ class UsersListWidget extends StatelessWidget {
                         title: Text("${e.data["json"]["name"]}"),
                         subtitle: Text("${e.data["json"]["email"]}"),
                         onTap: () {
-                          cubit.choseUser();
-                          print(cubit.state);
-                          // cubit.close();
+                          cubit.choseUser("");
+
+                          cubit.choseUser(e.id);
                         },
                       ))
                   .toList(),

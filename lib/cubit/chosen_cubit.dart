@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 
-class ChosenUserCubit extends Cubit<bool> {
-  ChosenUserCubit(bool isUserChosen) : super(isUserChosen);
+class ChosenUserCubit extends Cubit<String> {
+  ChosenUserCubit(String isUserChosen) : super(isUserChosen);
 
-  void choseUser() => emit(true);
+  void choseUser(String id) => emit(id);
 }
