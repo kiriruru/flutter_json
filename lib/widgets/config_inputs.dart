@@ -72,6 +72,7 @@ class InputWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<ChosenUserCubit>(context);
     return Focus(
         child: TextFormField(
           decoration: InputDecoration(
@@ -82,7 +83,7 @@ class InputWidget extends StatelessWidget {
         ),
         onFocusChange: (hasFocus) {
           if (hasFocus) return;
-          onStopEditing(config["title"], _controller.text);
+          onStopEditing(config["title"], _controller.text, cubit.state);
         });
   }
 }

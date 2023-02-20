@@ -8,16 +8,18 @@ abstract class DataSource {
   final String configPath;
   DataSource(this.dataPath, this.configPath);
 
-  late final Map<String, dynamic> _jsonItem;
-  late final Map<String, Map<String, String>> _config;
-  late final List<dynamic> _usersList;
-
+  late Map<String, dynamic> _jsonItem;
   Map<String, dynamic> get jsonItem => _jsonItem;
+  setJsonItem(Map<String, dynamic> newJsonItem) => _jsonItem = newJsonItem;
+
+  late final Map<String, Map<String, String>> _config;
   Map<String, Map<String, String>> get config => _config;
+
+  late final List<dynamic> _usersList;
   List<dynamic> get usersList => _usersList;
 
   Future<void> readData(String id);
-  Future<void> updateData(String key, String value);
+  Future<void> updateData(String key, String value, String id);
   Future<void> getInitData();
 }
 
@@ -45,7 +47,7 @@ class LocalDataSource extends DataSource {
   }
 
   @override
-  Future<void> updateData(key, value) async {
+  Future<void> updateData(key, value, id) async {
     if (_jsonItem[key] != value) {
       final File file = File(dataPath);
       _jsonItem[key] = value;
@@ -84,7 +86,7 @@ class HttpDataSource extends DataSource {
   }
 
   @override
-  Future<void> updateData(key, value) async {
+  Future<void> updateData(key, value, id) async {
     if (_jsonItem[key] != value) {
       final Map<String, dynamic> data = {key: value};
       final http.Response response =
@@ -129,18 +131,18 @@ class PocketBaseDataSource extends DataSource {
     if (id != null) {
       try {
         final record = await _pb.collection('testUsers').getOne(id);
+        print(record.id);
         _jsonItem = record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");
       }
     } else {
       print("There is no data");
-      _jsonItem = Map();
     }
   }
 
   @override
-  Future<void> updateData(key, value) async {
+  Future<void> updateData(key, value, id) async {
     if (_jsonItem[key] != value) {
       final pb = PocketBase("http://127.0.0.1:8090");
       final authData = await pb.admins
@@ -150,7 +152,7 @@ class PocketBaseDataSource extends DataSource {
       final jsonDataUpdated = jsonEncode(_jsonItem);
 
       final body = <String, dynamic>{"json": jsonDataUpdated};
-      await pb.collection('testUsers').update('6o8x3dj0mvkemyn', body: body);
+      await pb.collection('testUsers').update(id, body: body);
     }
   }
 }

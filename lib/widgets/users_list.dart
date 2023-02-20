@@ -29,6 +29,7 @@ class UsersListWidget extends StatelessWidget {
                         title: Text("${e.data["json"]["name"]}"),
                         subtitle: Text("${e.data["json"]["email"]}"),
                         onTap: () {
+                          dataSource.setJsonItem(<String, dynamic>{});
                           cubit.choseUser(e.id);
                         },
                       ))
