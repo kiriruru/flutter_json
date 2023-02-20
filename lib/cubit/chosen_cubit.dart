@@ -1,7 +1,28 @@
 import 'package:bloc/bloc.dart';
 
 class ChosenUserCubit extends Cubit<String> {
-  ChosenUserCubit(String isUserChosen) : super(isUserChosen);
+  ChosenUserCubit() : super("");
+  // final fieldDataSource;
+  //  this.fieldDataSource
 
-  void choseUser(String id) => emit(id);
+// CubitState {}
+// CubitStateInit{}
+// CubitStateLoading{}
+// CubitStateRead{}
+// CubitStateError{}
+
+  Future<void> choseUser(String id) async => {
+        // state.loading=
+        emit(id)
+      };
 }
+
+
+
+// добавить сюда Дата соурс (передать зависимость)
+// сделать типизарованный класс
+// прочитать про кубит стэйт
+// стэйт нужно обернуть в объект
+
+
+

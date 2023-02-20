@@ -15,10 +15,8 @@ class ConfigInputsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = BlocProvider.of<ChosenUserCubit>(context);
-
     return BlocBuilder<ChosenUserCubit, String>(builder: (context, state) {
-      if (cubit.state == null || cubit.state == "") {
+      if (state == null || state == "") {
         return Center(
           child: Row(
             children: [
@@ -29,7 +27,7 @@ class ConfigInputsWidget extends StatelessWidget {
         );
       } else {
         return FutureBuilder(
-          future: readJsonData(cubit.state),
+          future: readJsonData(state),
           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
             if (snapshot.hasData) {
               return SingleChildScrollView(

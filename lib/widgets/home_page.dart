@@ -13,18 +13,15 @@ class HomePage extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: BlocProvider(
-        create: (_) => ChosenUserCubit(""),
+        create: (_) => ChosenUserCubit(),
         child: Scaffold(
           appBar: AppBar(title: const Text("Json")),
-          body: Container(
-            width: double.infinity,
-            child: Row(
-              children: <Widget>[
-                Expanded(child: UsersListWidget()),
-                Container(width: 2, color: Colors.black),
-                Expanded(child: ConfigInputsWidget()),
-              ],
-            ),
+          body: Row(
+            children: <Widget>[
+              Expanded(child: UsersListWidget()),
+              Container(width: 2, color: Colors.black),
+              Expanded(child: ConfigInputsWidget()),
+            ],
           ),
         ),
       ),
