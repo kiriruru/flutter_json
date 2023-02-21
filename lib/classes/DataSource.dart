@@ -8,9 +8,9 @@ abstract class DataSource {
   final String configPath;
   DataSource(this.dataPath, this.configPath);
 
-  late Map<String, dynamic> _jsonItem;
-  Map<String, dynamic> get jsonItem => _jsonItem;
-  setJsonItem(Map<String, dynamic> newJsonItem) => _jsonItem = newJsonItem;
+  late Map<String, String> _jsonItem;
+  Map<String, String> get jsonItem => _jsonItem;
+  setJsonItem(Map<String, String> newJsonItem) => _jsonItem = newJsonItem;
 
   late final Map<String, Map<String, String>> _config;
   Map<String, Map<String, String>> get config => _config;

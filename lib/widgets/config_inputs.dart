@@ -15,7 +15,8 @@ class ConfigInputsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ChosenUserCubit, String>(builder: (context, state) {
+    return BlocBuilder<ChosenUserCubit, ChosenUserCubitState>(
+        builder: (context, state) {
       if (state == null || state == "") {
         return Center(
           child: Row(
