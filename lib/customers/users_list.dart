@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../classes/DataSource.dart';
-import '../customers/cubit.dart';
+import '../app/DataSource.dart';
+import 'cubit.dart';
 
 class UsersListWidget extends StatelessWidget {
   UsersListWidget({super.key});
@@ -26,10 +26,9 @@ class UsersListWidget extends StatelessWidget {
               children: dataSource.usersList
                   .map((e) => ListTile(
                         leading: Icon(Icons.person),
-                        title: Text(e.data["json"]["name"]),
-                        subtitle: Text(e.data["json"]["email"]),
+                        title: Text(e.getStringValue("username")),
+                        subtitle: Text(e.getStringValue("email")),
                         onTap: () {
-                          // dataSource.setJsonItem(<String, String>{});
                           cubit.choseUser(e.id);
                         },
                       ))

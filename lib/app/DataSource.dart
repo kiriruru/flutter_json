@@ -113,7 +113,6 @@ class PocketBaseDataSource extends DataSource {
     _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
 
-    final query = {'fields': 'id,username,email'};
     final records = await _pb.collection('users').getFullList();
 
     print("Records are: $records");

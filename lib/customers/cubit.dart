@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import '../classes/DataSource.dart';
+import '../app/DataSource.dart';
 
 class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   final DataSource ds;
@@ -14,6 +14,8 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
 }
 
 class ChosenUserCubitState {}
+// добавить иммутэйбл
+// ай мэп фаст иммутэйбл коллекшн - предоставляет иммутаб мэпи листы
 
 class ChosenUserCubitStateInit extends ChosenUserCubitState {}
 
@@ -22,8 +24,6 @@ class ChosenUserCubitStateLoading extends ChosenUserCubitState {}
 class ChosenUserCubitStateReady extends ChosenUserCubitState {
   final Map<String, dynamic> data;
   ChosenUserCubitStateReady(this.data);
-  @override
-  List<Object?> get props => [data];
 }
 
 class ChosenUserCubitStateError extends ChosenUserCubitState {}

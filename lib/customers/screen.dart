@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import '../classes/DataSource.dart';
-import '../cubit/chosen_cubit.dart';
-import './users_list.dart';
-import './config_inputs.dart';
+import '../app/DataSource.dart';
+import 'config_inputs.dart';
+import 'cubit.dart';
+import 'users_list.dart';
+// import './config_inputs.dart';
 
 class HomePage extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
