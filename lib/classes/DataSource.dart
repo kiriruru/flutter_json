@@ -8,9 +8,9 @@ abstract class DataSource {
   final String configPath;
   DataSource(this.dataPath, this.configPath);
 
-  late Map<String, String> _jsonItem;
-  Map<String, String> get jsonItem => _jsonItem;
-  setJsonItem(Map<String, String> newJsonItem) => _jsonItem = newJsonItem;
+  late Map<String, dynamic> _jsonItem;
+  Map<String, dynamic> get jsonItem => _jsonItem;
+  setJsonItem(Map<String, dynamic> newJsonItem) => _jsonItem = newJsonItem;
 
   late final Map<String, Map<String, String>> _config;
   Map<String, Map<String, String>> get config => _config;
@@ -113,7 +113,6 @@ class PocketBaseDataSource extends DataSource {
     _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
     final records = await _pb.collection('testUsers').getFullList();
-    print(records);
     _usersList = records;
 
     final File fileData = File(configPath);
@@ -132,7 +131,7 @@ class PocketBaseDataSource extends DataSource {
     if (id != null) {
       try {
         final record = await _pb.collection('testUsers').getOne(id);
-        print(record.id);
+        print("Fetched data is $record");
         _jsonItem = record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");

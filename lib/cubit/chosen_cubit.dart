@@ -23,19 +23,10 @@ class ChosenUserCubitStateInit extends ChosenUserCubitState {}
 class ChosenUserCubitStateLoading extends ChosenUserCubitState {}
 
 class ChosenUserCubitStateReady extends ChosenUserCubitState {
-  final Map<String, String> data;
+  final Map<String, dynamic> data;
   ChosenUserCubitStateReady(this.data);
   @override
   List<Object?> get props => [data];
 }
 
 class ChosenUserCubitStateError extends ChosenUserCubitState {}
-
-// // в BlocBuilder:
-// if(state is ChosenUserCubitStateInit){
-//   // ...
-// } else if(state is ChosenUserCubitStateLoading){
-//   // show CircleProgressIndicator
-// } else if(state is ChosenUserCubitStateready){
-//   ...
-// }

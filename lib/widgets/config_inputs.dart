@@ -5,54 +5,79 @@ import '../cubit/chosen_cubit.dart';
 import '../classes/DataSource.dart';
 
 class ConfigInputsWidget extends StatelessWidget {
-  ConfigInputsWidget({super.key});
   final dataSource = Modular.get<DataSource>();
-
-  Future<bool> readJsonData(id) async {
-    await dataSource.readData(id);
-    return true;
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChosenUserCubit, ChosenUserCubitState>(
-        builder: (context, state) {
-      if (state == null || state == "") {
-        return Center(
-          child: Row(
-            children: [
-              Icon(Icons.arrow_back),
-              Text("Select user"),
-            ],
-          ),
-        );
-      } else {
-        return FutureBuilder(
-          future: readJsonData(state),
-          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-            if (snapshot.hasData) {
-              return SingleChildScrollView(
-                child: Column(
-                    children: dataSource.config.values
-                        .map((value) => InputWidget(
-                              initValue:
-                                  dataSource.jsonItem[value["title"]] ?? "",
-                              config: value,
-                              onStopEditing: dataSource.updateData,
-                            ))
-                        .toList()),
-              );
-            } else if (snapshot.hasError) {
-              return const Text("Something went wrong");
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        );
-      }
-    });
+      builder: (context, state) {
+        if (state is ChosenUserCubitStateInit) {
+          print("state init");
+          return Center(
+            child: Row(
+              children: [
+                Icon(Icons.arrow_back),
+                Text("Select user"),
+              ],
+            ),
+          );
+        } else if (state is ChosenUserCubitStateLoading) {
+          print("state is loading");
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is ChosenUserCubitStateReady) {
+          print("state is ready");
+          print(state.data);
+          return SingleChildScrollView(
+            child: Column(
+                children: dataSource.config.values
+                    .map((value) => InputWidget(
+                          initValue: dataSource.jsonItem[value["title"]] ?? "",
+                          config: value,
+                          onStopEditing: dataSource.updateData,
+                        ))
+                    .toList()),
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 }
+// {
+// if (state == null || state == "") {
+//   return Center(
+//     child: Row(
+//       children: [
+//         Icon(Icons.arrow_back),
+//         Text("Select user"),
+//       ],
+//     ),
+//   );
+// } else {
+//   return FutureBuilder(
+//     future: readJsonData(state),
+//     builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+//       if (snapshot.hasData) {
+//         return SingleChildScrollView(
+//           child: Column(
+//               children: dataSource.config.values
+//                   .map((value) => InputWidget(
+//                         initValue:
+//                             dataSource.jsonItem[value["title"]] ?? "",
+//                         config: value,
+//                         onStopEditing: dataSource.updateData,
+//                       ))
+//                   .toList()),
+//         );
+//       } else if (snapshot.hasError) {
+//         return const Text("Something went wrong");
+//       } else {
+//         return const Center(child: CircularProgressIndicator());
+//       }
+//     },
+//   );
+// }
 
 class InputWidget extends StatelessWidget {
   final String initValue; // from parent widget

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import '../classes/DataSource.dart';
 import '../cubit/chosen_cubit.dart';
 import './users_list.dart';
 import './config_inputs.dart';
 
 class HomePage extends StatelessWidget {
+  final dataSource = Modular.get<DataSource>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,7 +17,7 @@ class HomePage extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: BlocProvider(
-        create: (_) => ChosenUserCubit(),
+        create: (_) => ChosenUserCubit(dataSource),
         child: Scaffold(
           appBar: AppBar(title: const Text("Json")),
           body: Row(
