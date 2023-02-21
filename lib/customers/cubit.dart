@@ -3,13 +3,24 @@ import '../app/DataSource.dart';
 
 class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   final DataSource ds;
-  ChosenUserCubit(this.ds) : super(ChosenUserCubitStateInit());
+
+  ChosenUserCubit(this.ds) : super(ChosenUserCubitStateInit()) {
+    final Map<String, dynamic> data = {};
+    final String id = "";
+  }
 
   Future<void> choseUser(String id) async {
     emit(ChosenUserCubitStateLoading());
-    await ds.readData(id);
-    final jsonItem = ds.jsonItem;
-    emit(ChosenUserCubitStateReady(jsonItem));
+    final jsonItem = await ds.readData(id);
+    emit(ChosenUserCubitStateReady(jsonItem, id));
+  }
+
+  Future<void> updateUserData(String id, String key, String value) async {
+    emit(ChosenUserCubitStateLoading());
+    final jsonItem = await ds.readData(id);
+    final newJsonItem = await ds.updateData(id, jsonItem, key, value);
+
+    emit(ChosenUserCubitStateReady(newJsonItem, id));
   }
 }
 
@@ -23,7 +34,8 @@ class ChosenUserCubitStateLoading extends ChosenUserCubitState {}
 
 class ChosenUserCubitStateReady extends ChosenUserCubitState {
   final Map<String, dynamic> data;
-  ChosenUserCubitStateReady(this.data);
+  final String id;
+  ChosenUserCubitStateReady(this.data, this.id);
 }
 
 class ChosenUserCubitStateError extends ChosenUserCubitState {}
