@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../classes/DataSource.dart';
-import '../cubit/chosen_cubit.dart';
+import '../customers/cubit.dart';
 
 class UsersListWidget extends StatelessWidget {
   UsersListWidget({super.key});
