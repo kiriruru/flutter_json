@@ -9,9 +9,6 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
     emit(ChosenUserCubitStateLoading());
     await ds.readData(id);
     final jsonItem = ds.jsonItem;
-
-    // получаем данные от покетбейза + парсинг json
-    // final t = await ds.getData();
     emit(ChosenUserCubitStateReady(jsonItem));
   }
 }

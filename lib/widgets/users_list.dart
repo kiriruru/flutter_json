@@ -26,8 +26,8 @@ class UsersListWidget extends StatelessWidget {
               children: dataSource.usersList
                   .map((e) => ListTile(
                         leading: Icon(Icons.person),
-                        title: Text("${e.data["json"]["name"]}"),
-                        subtitle: Text("${e.data["json"]["email"]}"),
+                        title: Text(e.data["json"]["name"]),
+                        subtitle: Text(e.data["json"]["email"]),
                         onTap: () {
                           // dataSource.setJsonItem(<String, String>{});
                           cubit.choseUser(e.id);

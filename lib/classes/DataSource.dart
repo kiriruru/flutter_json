@@ -112,7 +112,11 @@ class PocketBaseDataSource extends DataSource {
     _pb = PocketBase(dataPath);
     _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
-    final records = await _pb.collection('testUsers').getFullList();
+
+    final query = {'fields': 'id,username,email'};
+    final records = await _pb.collection('users').getFullList();
+
+    print("Records are: $records");
     _usersList = records;
 
     final File fileData = File(configPath);
@@ -130,7 +134,7 @@ class PocketBaseDataSource extends DataSource {
   Future<void> readData(id) async {
     if (id != null) {
       try {
-        final record = await _pb.collection('testUsers').getOne(id);
+        final record = await _pb.collection('users').getOne(id);
         print("Fetched data is $record");
         _jsonItem = record.data["json"];
       } catch (e) {
@@ -152,7 +156,7 @@ class PocketBaseDataSource extends DataSource {
       final jsonDataUpdated = jsonEncode(_jsonItem);
 
       final body = <String, dynamic>{"json": jsonDataUpdated};
-      await pb.collection('testUsers').update(id, body: body);
+      await pb.collection('users').update(id, body: body);
     }
   }
 }

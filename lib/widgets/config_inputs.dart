@@ -26,12 +26,11 @@ class ConfigInputsWidget extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else if (state is ChosenUserCubitStateReady) {
           print("state is ready");
-          print(state.data);
           return SingleChildScrollView(
             child: Column(
                 children: dataSource.config.values
                     .map((value) => InputWidget(
-                          initValue: dataSource.jsonItem[value["title"]] ?? "",
+                          initValue: state.data[value["title"]] ?? "",
                           config: value,
                           onStopEditing: dataSource.updateData,
                         ))
