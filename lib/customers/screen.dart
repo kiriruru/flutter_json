@@ -77,7 +77,6 @@ class ConfigInputsWidget extends StatelessWidget {
     return BlocBuilder<ChosenUserCubit, ChosenUserCubitState>(
       builder: (context, state) {
         if (state is ChosenUserCubitStateInit) {
-          print("state init");
           return Center(
             child: Row(
               children: [
@@ -87,10 +86,8 @@ class ConfigInputsWidget extends StatelessWidget {
             ),
           );
         } else if (state is ChosenUserCubitStateLoading) {
-          print("state is loading");
           return const Center(child: CircularProgressIndicator());
         } else if (state is ChosenUserCubitStateReady) {
-          print("state is ready");
           return SingleChildScrollView(
             child: Column(
                 children: dataSource.config.values
@@ -111,10 +108,10 @@ class ConfigInputsWidget extends StatelessWidget {
 }
 
 class InputWidget extends StatelessWidget {
-  final String initValue; // from parent widget
-  final String id; // from parent widget
-  final Map<String, String> config; // from parent widget
-  final Function onStopEditing; // from parent widget
+  final String initValue;
+  final String id;
+  final Map<String, String> config;
+  final Function onStopEditing;
   final TextEditingController _controller = TextEditingController();
 
   InputWidget({

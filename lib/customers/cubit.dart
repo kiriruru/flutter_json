@@ -16,17 +16,13 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   }
 
   Future<void> updateUserData(String id, String key, String value) async {
-    emit(ChosenUserCubitStateLoading());
-    final jsonItem = await ds.readData(id);
-    final newJsonItem = await ds.updateData(id, jsonItem, key, value);
-
-    emit(ChosenUserCubitStateReady(newJsonItem, id));
+    final jsonItem = await ds.readData(
+        id); // ! select current state instead reading fetching new data
+    await ds.updateData(id, jsonItem, key, value);
   }
 }
 
 class ChosenUserCubitState {}
-// добавить иммутэйбл
-// ай мэп фаст иммутэйбл коллекшн - предоставляет иммутаб мэпи листы
 
 class ChosenUserCubitStateInit extends ChosenUserCubitState {}
 

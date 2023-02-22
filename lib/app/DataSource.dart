@@ -8,10 +8,6 @@ abstract class DataSource {
   final String configPath;
   DataSource(this.dataPath, this.configPath);
 
-  // late Map<String, dynamic> _jsonItem;
-  // Map<String, dynamic> get jsonItem => _jsonItem;
-  // setJsonItem(Map<String, dynamic> newJsonItem) => _jsonItem = newJsonItem;
-
   late final Map<String, Map<String, String>> _config;
   Map<String, Map<String, String>> get config => _config;
 
@@ -19,7 +15,7 @@ abstract class DataSource {
   List<dynamic> get usersList => _usersList;
 
   Future<Map<String, dynamic>> readData(String id);
-  Future<Map<String, dynamic>> updateData(
+  Future<void> updateData(
     String id,
     Map<String, dynamic> jsonItem,
     String key,
@@ -70,7 +66,7 @@ class PocketBaseDataSource extends DataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> updateData(
+  Future<void> updateData(
     String id,
     Map<String, dynamic> jsonItem,
     String key,
@@ -86,7 +82,6 @@ class PocketBaseDataSource extends DataSource {
       final body = <String, dynamic>{"json": jsonDataUpdated};
       await pb.collection('users').update(id, body: body);
     }
-    return jsonItem;
   }
 }
 
