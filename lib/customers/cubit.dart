@@ -4,14 +4,11 @@ import '../app/DataSource.dart';
 class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   final DataSource ds;
 
-  ChosenUserCubit(this.ds) : super(ChosenUserCubitStateInit()) {
-    final Map<String, dynamic> data = {};
-    final String id = "";
-  }
+  ChosenUserCubit(this.ds) : super(ChosenUserCubitState());
 
   Future<void> choseUser(String id) async {
-    final currentState = state;
-    if (currentState is ChosenUserCubitStateReady && currentState.id == id) {
+    if (state.id == id) {
+      return;
     } else {
       emit(ChosenUserCubitStateLoading());
       final jsonItem = await ds.readData(id);
@@ -20,19 +17,27 @@ class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   }
 
   Future<void> updateUserData(String id, String key, String value) async {
-    final currentState = state;
-    if (currentState is ChosenUserCubitStateReady) {
-      final jsonItem = currentState.data;
-      await ds.updateData(id, jsonItem, key, value);
-    }
+    final jsonItem = state.data;
+    await ds.updateData(id, jsonItem, key, value);
   }
 }
 
-class ChosenUserCubitState {}
+class ChosenUserCubitState {
+  final Map<String, dynamic> data = {};
+  final String id = "";
+  // ChosenUserCubitState(this.data, this.id);
+}
 
-class ChosenUserCubitStateInit extends ChosenUserCubitState {}
+class ChosenUserCubitStateInit extends ChosenUserCubitState {
+  final Map<String, dynamic> data = {};
+  final String id = "";
+  // ChosenUserCubitStateInit(this.data, this.id) : super(data, id);
+}
 
-class ChosenUserCubitStateLoading extends ChosenUserCubitState {}
+class ChosenUserCubitStateLoading extends ChosenUserCubitState {
+  final Map<String, dynamic> data = {};
+  final String id = "";
+}
 
 class ChosenUserCubitStateReady extends ChosenUserCubitState {
   final Map<String, dynamic> data;
