@@ -79,7 +79,7 @@ class ConfigInputsWidget extends StatelessWidget {
         if (state is ChosenUserCubitStateInit) {
           return Center(
             child: Row(
-              children: [
+              children: const [
                 Icon(Icons.arrow_back),
                 Text("Select user"),
               ],
