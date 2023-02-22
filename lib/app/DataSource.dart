@@ -27,8 +27,8 @@ abstract class DataSource {
 // ! POCKET BASE
 class PocketBaseDataSource extends DataSource {
   PocketBaseDataSource(super.dataPath, super.configPath);
-  late final _pb;
-  late final _authData;
+  late final PocketBase _pb;
+  late final AdminAuth _authData;
 
   @override
   Future<void> getInitData() async {
