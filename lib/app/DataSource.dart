@@ -35,7 +35,7 @@ class PocketBaseDataSource extends DataSource {
     _pb = PocketBase(dataPath);
     _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
-    final records = await _pb.collection('users').getFullList();
+    final records = await _pb.collection('thousandUsers').getFullList();
 
     _usersList = records;
 
@@ -54,7 +54,7 @@ class PocketBaseDataSource extends DataSource {
   Future<Map<String, dynamic>> readData(String id) async {
     if (id != null) {
       try {
-        final record = await _pb.collection('users').getOne(id);
+        final record = await _pb.collection('thousandUsers').getOne(id);
         return record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");
@@ -80,7 +80,7 @@ class PocketBaseDataSource extends DataSource {
       jsonItem[key] = value;
       final jsonDataUpdated = jsonEncode(jsonItem);
       final body = <String, dynamic>{"json": jsonDataUpdated};
-      await pb.collection('users').update(id, body: body);
+      await pb.collection('thousandUsers').update(id, body: body);
     }
   }
 }

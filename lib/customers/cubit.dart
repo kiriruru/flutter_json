@@ -1,41 +1,41 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
 import '../app/DataSource.dart';
 
 class ChosenUserCubit extends Cubit<ChosenUserCubitState> {
   final DataSource ds;
 
-  ChosenUserCubit(this.ds) : super(ChosenUserCubitState({}, ""));
+  ChosenUserCubit(this.ds) : super(ChosenUserCubitStateInit());
 
   Future<void> choseUser(String id) async {
-    if (state.id == id) {
-      return;
-    } else {
-      emit(ChosenUserCubitStateLoading({}, id));
-      final jsonItem = await ds.readData(id);
+    if (state.id == id) return;
+    emit(ChosenUserCubitStateLoading());
+    final jsonItem = await ds.readData(id);
+    try {
       emit(ChosenUserCubitStateReady(jsonItem, id));
+    } catch (e) {
+      emit(ChosenUserCubitStateError(e.toString(), jsonItem, id));
     }
   }
 
   Future<void> updateUserData(String id, String key, String value) async {
-    final jsonItem = state.data;
-    await ds.updateData(id, jsonItem, key, value);
+    await ds.updateData(id, state.data, key, value);
   }
 }
 
-class ChosenUserCubitState {
+@immutable
+abstract class ChosenUserCubitState {
   final Map<String, dynamic> data;
   final String id;
   ChosenUserCubitState(this.data, this.id);
 }
 
 class ChosenUserCubitStateInit extends ChosenUserCubitState {
-  ChosenUserCubitStateInit(data, id) : super(data, id);
+  ChosenUserCubitStateInit() : super({}, "");
 }
 
 class ChosenUserCubitStateLoading extends ChosenUserCubitState {
-  final String id;
-
-  ChosenUserCubitStateLoading(data, this.id) : super(data, id);
+  ChosenUserCubitStateLoading() : super({}, "");
 }
 
 class ChosenUserCubitStateReady extends ChosenUserCubitState {
@@ -43,5 +43,6 @@ class ChosenUserCubitStateReady extends ChosenUserCubitState {
 }
 
 class ChosenUserCubitStateError extends ChosenUserCubitState {
-  ChosenUserCubitStateError(data, id) : super(data, id);
+  final String error;
+  ChosenUserCubitStateError(this.error, data, id) : super(data, id);
 }

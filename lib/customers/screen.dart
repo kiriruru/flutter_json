@@ -44,19 +44,20 @@ class UsersListWidget extends StatelessWidget {
       future: getUsers(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
         if (snapshot.hasData) {
-          return SingleChildScrollView(
-            child: Column(
-              children: dataSource.usersList
-                  .map((e) => ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text(e.getStringValue("username")),
-                        subtitle: Text(e.getStringValue("email")),
-                        onTap: () {
-                          cubit.choseUser(e.id);
-                        },
-                      ))
-                  .toList(),
-            ),
+          return ListView.builder(
+            itemCount: dataSource.usersList.length,
+            itemBuilder: (context, index) {
+              var item = dataSource.usersList[index];
+              return ListTile(
+                leading: Icon(Icons.person),
+                title: Text(item.getStringValue("username")),
+                subtitle: Text(item.getStringValue("email")),
+                onTap: () {
+                  cubit.choseUser(item.id);
+                  print(item.id);
+                },
+              );
+            },
           );
         } else if (snapshot.hasError) {
           return const Text("Something went wrong");
@@ -99,9 +100,10 @@ class ConfigInputsWidget extends StatelessWidget {
                         ))
                     .toList()),
           );
-        } else {
-          return Container();
+        } else if (state is ChosenUserCubitStateError) {
+          return Container(child: Text(state.error));
         }
+        return Container();
       },
     );
   }
