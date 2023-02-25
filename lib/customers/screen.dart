@@ -12,11 +12,11 @@ class HomePage extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData.dark(),
-      home: BlocProvider(
-        create: (_) => ChosenUserCubit(dataSource),
-        child: Scaffold(
-          appBar: AppBar(title: const Text("Json")),
-          body: Row(
+      home: Scaffold(
+        appBar: AppBar(title: const Text("Json")),
+        body: BlocProvider(
+          create: (_) => ChosenUserCubit(dataSource),
+          child: Row(
             children: <Widget>[
               Expanded(child: UsersListWidget()),
               Container(width: 2, color: Colors.black),
