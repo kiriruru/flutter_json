@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:pocketbase/pocketbase.dart';
 import '../app/DataSource.dart';
 import './cubit.dart';
 
@@ -52,10 +53,7 @@ class UsersListWidget extends StatelessWidget {
                 leading: Icon(Icons.person),
                 title: Text(item.getStringValue("username")),
                 subtitle: Text(item.getStringValue("email")),
-                onTap: () {
-                  cubit.choseUser(item.id);
-                  print(item.id);
-                },
+                onTap: () => cubit.choseUser(item.id),
               );
             },
           );
@@ -68,6 +66,35 @@ class UsersListWidget extends StatelessWidget {
     );
   }
 }
+
+// class MyListTile extends StatefulWidget {
+//   final RecordModel item;
+//   const MyListTile(this.item, {super.key});
+
+//   @override
+//   State<MyListTile> createState() => _MyListTileState();
+// }
+
+// class _MyListTileState extends State<MyListTile> {
+//   late String _selectedItemId;
+
+//   @override
+//   void initState() {
+//     _selectedItemId = widget.item.id;
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final cubit = BlocProvider.of<ChosenUserCubit>(context);
+//     return ListTile(
+//       leading: Icon(Icons.person),
+//       title: Text(widget.item.getStringValue("username")),
+//       subtitle: Text(widget.item.getStringValue("email")),
+//       tileColor: _selectedItemId == widget.item.id ? Colors.blue : null,
+//       onTap: () => cubit.choseUser(widget.item.id),
+//     );
+//   }
+// }
 
 class ConfigInputsWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
