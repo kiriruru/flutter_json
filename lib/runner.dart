@@ -11,7 +11,7 @@ void runner() {
   runZonedGuarded(
     () => runApp(ModularApp(module: AppModule(), child: AppWidget())),
     (error, stackTrace) => print('Oh noes! $error $stackTrace'),
-  );
+  ); // старое, проверить на будущее
 }
 
 class AppWidget extends StatelessWidget {
