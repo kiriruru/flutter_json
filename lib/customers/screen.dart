@@ -1,7 +1,9 @@
+import 'package:docxtpl/docxtpl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../app/DataSource.dart';
+import '../app/TeamplateSource.dart';
 import './cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -32,8 +34,41 @@ class HomePage extends StatelessWidget {
 class UsersListWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
 
+  Future<void> generate(String tplPath) async {
+    print("start generate");
+
+    final DocxTpl docxTpl = DocxTpl(
+      docxTemplate: tplPath,
+    );
+
+    var response = await docxTpl.parseDocxTpl();
+    print(response.mergeStatus);
+    print(response.message);
+
+    var fields = docxTpl.getMergeFields();
+    print('[INFO] local template file fields found: ');
+    print(fields);
+
+    var templateData = {
+      'CLIENT_FIO_UC': 'Begov Alimardon',
+      'CLIENT_PASSPORT': '9988 777666',
+      'COMPANY_NAME': 'Vanguard',
+      'COMPANY_PIB': '00010010110',
+      'DD_MM_YYYY': '02.03.2023',
+    };
+
+    if (response.mergeStatus == MergeResponseStatus.Success) {
+      await docxTpl.writeMergeFields(data: templateData);
+      var savedFile = await docxTpl.save('generatedDocument.docx');
+    }
+  }
+
   Future<bool> getUsers() async {
     await dataSource.getInitData();
+    TeamplateSource teamplates =
+        PocketBaseTeamplateSource("http://127.0.0.1:8090");
+    String tplPath = await teamplates.getDocumentPath("izjava");
+    await generate(tplPath); // function from template2_docx.dart
     return true;
   }
 
@@ -65,35 +100,6 @@ class UsersListWidget extends StatelessWidget {
     );
   }
 }
-
-// class MyListTile extends StatefulWidget {
-//   final RecordModel item;
-//   const MyListTile(this.item, {super.key});
-
-//   @override
-//   State<MyListTile> createState() => _MyListTileState();
-// }
-
-// class _MyListTileState extends State<MyListTile> {
-//   late String _selectedItemId;
-
-//   @override
-//   void initState() {
-//     _selectedItemId = widget.item.id;
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final cubit = BlocProvider.of<ChosenUserCubit>(context);
-//     return ListTile(
-//       leading: Icon(Icons.person),
-//       title: Text(widget.item.getStringValue("username")),
-//       subtitle: Text(widget.item.getStringValue("email")),
-//       tileColor: _selectedItemId == widget.item.id ? Colors.blue : null,
-//       onTap: () => cubit.choseUser(widget.item.id),
-//     );
-//   }
-// }
 
 class ConfigInputsWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();

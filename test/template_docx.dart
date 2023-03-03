@@ -1,13 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:docx_template/docx_template.dart';
-import '';
-
-// clientFIO
-// clientPassport
-// companyName
-// companyPIB
-// date
 
 void main() {
   Future<void> generateDocument() async {

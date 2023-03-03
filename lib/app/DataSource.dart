@@ -35,7 +35,7 @@ class PocketBaseDataSource extends DataSource {
     _pb = PocketBase(dataPath);
     _authData = await _pb.admins
         .authWithPassword('alimardon007@gmail.com', '5544332211');
-    final records = await _pb.collection('thousandUsers').getFullList();
+    final records = await _pb.collection('select').getFullList();
 
     _usersList = records;
 

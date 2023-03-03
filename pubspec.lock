@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: eb33140ede1b4039f4ad631f7bf3cfa58e24514e8bf87184bc32f17541af87fc
+      sha256: d6347d54a2d8028e0437e3c099f66fdb8ae02c4720c1e7534c9f24c10351f85d
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "3.3.6"
   async:
     dependency: transitive
     description:
@@ -57,6 +57,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.0"
+  convert:
+    dependency: transitive
+    description:
+      name: convert
+      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   crypto:
     dependency: transitive
     description:
@@ -81,6 +89,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.3.3"
+  docxtpl:
+    dependency: "direct main"
+    description:
+      path: "../docxtpl"
+      relative: true
+    source: path
+    version: "0.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -239,10 +254,18 @@ packages:
     dependency: "direct main"
     description:
       name: pocketbase
-      sha256: "2630b7ce30f36a4a89afa6b4040be524ecf73e64add849f366601516ed1161f4"
+      sha256: d1eecbdf1540b963b1f40fb871e4e68798f8fa59c69de13cd11bf36c104b82d9
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.2"
+    version: "0.7.3"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      sha256: db7306cf0249f838d1a24af52b5a5887c5bf7f31d8bb4e827d071dc0939ad346
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.6.2"
   provider:
     dependency: transitive
     description:
@@ -330,4 +353,4 @@ packages:
     version: "6.2.2"
 sdks:
   dart: ">=2.18.6 <3.0.0"
-  flutter: ">=1.16.0"
+  flutter: ">=1.17.0"
