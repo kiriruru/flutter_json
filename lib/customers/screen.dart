@@ -45,8 +45,9 @@ class UsersListWidget extends StatelessWidget {
     };
     String id = "2sylungy3q251b9";
 
-    TplFacade teamplate = TplFacade();
-    teamplate.generateTplFromRemote(id, templateData);
+    TplFacade tpl = TplFacadeRemote(id: id, templateData: templateData);
+    tpl.generateDocument();
+
     return true;
   }
 
