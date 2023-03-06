@@ -1,9 +1,8 @@
-import 'package:docxtpl/docxtpl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_js/app/TplFacade.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import '../app/DataSource.dart';
-import '../app/TeamplateSource.dart';
 import './cubit.dart';
 
 class HomePage extends StatelessWidget {
@@ -34,41 +33,20 @@ class HomePage extends StatelessWidget {
 class UsersListWidget extends StatelessWidget {
   final dataSource = Modular.get<DataSource>();
 
-  Future<void> generate(String tplPath) async {
-    print("start generate");
+  Future<bool> getUsers() async {
+    await dataSource.getInitData();
 
-    final DocxTpl docxTpl = DocxTpl(
-      docxTemplate: tplPath,
-    );
-
-    var response = await docxTpl.parseDocxTpl();
-    print(response.mergeStatus);
-    print(response.message);
-
-    var fields = docxTpl.getMergeFields();
-    print('[INFO] local template file fields found: ');
-    print(fields);
-
-    var templateData = {
+    Map<String, String> templateData = {
       'CLIENT_FIO_UC': 'Begov Alimardon',
       'CLIENT_PASSPORT': '9988 777666',
       'COMPANY_NAME': 'Vanguard',
       'COMPANY_PIB': '00010010110',
       'DD_MM_YYYY': '02.03.2023',
     };
+    String id = "2sylungy3q251b9";
 
-    if (response.mergeStatus == MergeResponseStatus.Success) {
-      await docxTpl.writeMergeFields(data: templateData);
-      var savedFile = await docxTpl.save('generatedDocument.docx');
-    }
-  }
-
-  Future<bool> getUsers() async {
-    await dataSource.getInitData();
-    TeamplateSource teamplates =
-        PocketBaseTeamplateSource("http://127.0.0.1:8090");
-    String tplPath = await teamplates.getDocumentPath("izjava");
-    await generate(tplPath); // function from template2_docx.dart
+    TplFacade teamplate = TplFacade();
+    teamplate.generateTplFromRemote(id, templateData);
     return true;
   }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_js/app/TplFacade.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'app/DataSource.dart';
 import 'customers/screen.dart';
@@ -11,7 +12,7 @@ void runner() {
   runZonedGuarded(
     () => runApp(ModularApp(module: AppModule(), child: AppWidget())),
     (error, stackTrace) => print('Oh noes! $error $stackTrace'),
-  ); // старое, проверить на будущее
+  ); // старое, проверить
 }
 
 class AppWidget extends StatelessWidget {
@@ -31,7 +32,7 @@ class AppModule extends Module {
         Bind.singleton((i) => PocketBaseDataSource(
               "http://127.0.0.1:8090",
               "assets/config.json",
-            ))
+            )),
       ];
 
   List<ModularRoute> get routes => [
