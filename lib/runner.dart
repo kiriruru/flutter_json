@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_js/app/TplFacade.dart';
+import 'package:flutter_js/app/pbAuth.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'app/DataSource.dart';
 import 'customers/screen.dart';
 
@@ -29,10 +31,9 @@ class AppWidget extends StatelessWidget {
 class AppModule extends Module {
   @override
   List<Bind> get binds => [
-        Bind.singleton((i) => PocketBaseDataSource(
-              "http://127.0.0.1:8090",
-              "assets/config.json",
-            )),
+        // Bind.singleton((i) => PbAuth()),
+        // Bind.singleton((i) => DataSource(pb, "assets/config.json")),
+        Bind.singleton((i) => PocketBaseDataSource(pb, "assets/config.json")),
       ];
 
   List<ModularRoute> get routes => [

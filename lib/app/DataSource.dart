@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:pocketbase/pocketbase.dart';
 
 abstract class DataSource {
-  final String dataPath;
+  final PocketBase pb;
   final String configPath;
-  DataSource(this.dataPath, this.configPath);
+
+  DataSource(this.pb, this.configPath);
 
   late final Map<String, Map<String, String>> _config;
   Map<String, Map<String, String>> get config => _config;
@@ -26,17 +27,11 @@ abstract class DataSource {
 
 // ! POCKET BASE
 class PocketBaseDataSource extends DataSource {
-  PocketBaseDataSource(super.dataPath, super.configPath);
-  late final PocketBase _pb;
-  late final AdminAuth _authData;
+  PocketBaseDataSource(super.pb, super.configPath);
 
   @override
   Future<void> getInitData() async {
-    _pb = PocketBase(dataPath);
-    _authData = await _pb.admins
-        .authWithPassword('alimardon007@gmail.com', '5544332211');
-    final records = await _pb.collection('select').getFullList();
-
+    final records = await pb.collection('select').getFullList();
     _usersList = records;
 
     final File fileData = File(configPath);
@@ -46,7 +41,6 @@ class PocketBaseDataSource extends DataSource {
     jsonConfigParsed.forEach((key, value) {
       finalMapFromJson[key] = value.cast<String, String>();
     });
-
     _config = finalMapFromJson;
   }
 
@@ -54,7 +48,7 @@ class PocketBaseDataSource extends DataSource {
   Future<Map<String, dynamic>> readData(String id) async {
     if (id != null) {
       try {
-        final record = await _pb.collection('thousandUsers').getOne(id);
+        final record = await pb.collection('thousandUsers').getOne(id);
         return record.data["json"];
       } catch (e) {
         print("error fetchin data by this id: $id");
@@ -73,10 +67,6 @@ class PocketBaseDataSource extends DataSource {
     String value,
   ) async {
     if (jsonItem[key] != value) {
-      final pb = PocketBase("http://127.0.0.1:8090");
-      final authData = await pb.admins
-          .authWithPassword('alimardon007@gmail.com', '5544332211');
-
       jsonItem[key] = value;
       final jsonDataUpdated = jsonEncode(jsonItem);
       final body = <String, dynamic>{"json": jsonDataUpdated};

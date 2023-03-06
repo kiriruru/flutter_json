@@ -1,4 +1,6 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'DataSource.dart';
 import 'TplGenerator.dart';
 
 abstract class TplFacade {
@@ -14,12 +16,12 @@ class TplFacadeRemote extends TplFacade {
 
   @override
   Future<void> generateDocument() async {
-    final PocketBase _pb = PocketBase("http://127.0.0.1:8090");
-    final AdminAuth _authData = await _pb.admins
-        .authWithPassword('alimardon007@gmail.com', '5544332211');
-    final RecordModel record = await _pb.collection('documents').getOne(id);
+    final dataSource = Modular.get<DataSource>();
+    final RecordModel record =
+        await dataSource.pb.collection('documents').getOne(id);
     final String firstFilename = record.getListValue<String>('document')[0];
-    final String fullTplPath = _pb.getFileUrl(record, firstFilename).toString();
+    final String fullTplPath =
+        dataSource.pb.getFileUrl(record, firstFilename).toString();
 
     final TplGenerator _generator = TplGenerator(
       templateData: templateData,
