@@ -7,7 +7,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'app/DataSource.dart';
 import 'customers/screen.dart';
 
-void runner() {
+void runner() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     print('Oh noes! ${details.exception} ${details.stack}');
   };
@@ -31,9 +31,20 @@ class AppWidget extends StatelessWidget {
 class AppModule extends Module {
   @override
   List<Bind> get binds => [
-        // Bind.singleton((i) => PbAuth()),
-        // Bind.singleton((i) => DataSource(pb, "assets/config.json")),
-        Bind.singleton((i) => PocketBaseDataSource(pb, "assets/config.json")),
+        // AsyncBind<PocketBase>((i) async {
+        //   print("asyncBind started");
+        //   final PocketBase pb = PocketBase("http://127.0.0.1:8090");
+        //   final AdminAuth authData = await pb.admins
+        //       .authWithPassword('alimardon007@gmail.com', '5544332211');
+        //   return pb;
+        // }),
+
+        // Bind.factory((i) {
+        //   print("factory bind started");
+        //   return PocketBase("http://127.0.0.1:8090");
+        // }), //! работает
+        Bind.singleton(
+            (i) => PocketBaseDataSource(PbAuth().pb, "assets/config.json")),
       ];
 
   List<ModularRoute> get routes => [
